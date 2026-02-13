@@ -36,11 +36,11 @@ Abre tu terminal en la carpeta raíz del proyecto (`/var/www/html/gymos/gymos-mo
    ```
 
 ## Paso 3: Conectar y Subir
-Copia la URL de tu repositorio de GitHub (ejemplo: `https://github.com/tu-usuario/gymos-monorepo.git`).
+Copia la URL de tu repositorio de GitHub (ejemplo: `https://github.com/lucassebastianfiorio/gymos.git`).
 
 1. **Vincular el repositorio remoto**:
    ```bash
-   git remote add origin https://github.com/TU_USUARIO/gymos-monorepo.git
+   git remote add origin https://github.com/TU_USUARIO/gymos.git
    ```
    *(Reemplaza `TU_USUARIO` con tu nombre de usuario real)*.
 
