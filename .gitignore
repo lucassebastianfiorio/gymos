@@ -1,2 +1,23 @@
+# Node / Next
 node_modules/
-node_modules/
+.next/
+dist/
+build/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# PNPM
+.pnpm-store/
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
