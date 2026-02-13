@@ -1,0 +1,163 @@
+GymOS / [Nombre Provisional] - ROADMAP DEFINITIVO (Admin Global First)
+
+================================================================================
+ESTRUCTURA MONOREPO
+================================================================================
+
+/gymos-monorepo
+ ├─ apps/
+ │    ├─ web/              ← frontend Next.js (shadcn dashboard)
+ │    └─ api/              ← NestJS backend (tenants, auth, APIs)
+ ├─ packages/
+ │    ├─ ui/               ← componentes Shadcn + custom
+ │    ├─ contracts/        ← types / interfaces TS compartidos
+ │    └─ utils/            ← helpers
+ └─ .env
+
+Regla: Todo funciona sin backend y sin IA, después se conecta con Nest y módulos de IA.
+
+================================================================================
+ETAPA 0 - Setup Inicial (1 semana)
+================================================================================
+- Clonar template: next-shadcn-admin-dashboard
+- Configurar monorepo
+- Instalar dependencias TS + Tailwind + Shadcn UI
+- Configurar App Router y layout global
+- Preparar roles y rutas protegidas (RBAC mock): AdminGlobal / AdminTenant
+- Skeletons y loading states para todos los dashboards
+
+================================================================================
+ETAPA 1 - Admin Global: Tenants (2 semanas)
+================================================================================
+Pantallas:
+1. Listado de tenants:
+   - Tabla: nombre, plan, estado, último login, usuarios
+   - Filtros: plan, estado, fecha
+   - Buscador rápido
+2. Detalle tenant:
+   - Logo, contacto, sucursales, plan
+   - Features activadas/desactivadas
+   - Settings: congelamiento, cupos, reglas de asistencia
+   - Roles internos: Admin, Entrenador, Staff
+   - Toggle IA on/off
+   - Timeline de actividad y métricas mock
+3. Crear / editar tenant:
+   - Formulario modal/página
+   - Validaciones
+   - Preview de configuraciones y plan
+   - Reglas por defecto activables
+
+Datos mock:
+[
+  {
+    "id": "t1",
+    "name": "Gimnasio Norte",
+    "plan": "Enterprise",
+    "active": true,
+    "features": {
+      "ai_insights": true,
+      "qr_checkin": true,
+      "custom_reports": false
+    },
+    "settings": {
+      "freeze_days": 30,
+      "max_class_capacity": 50
+    }
+  }
+]
+
+================================================================================
+ETAPA 2 - Admin Global: Features y Configuración (1 semana)
+================================================================================
+- Listado de Features: AI Insights, Forecast de ingresos, Optimización de clases, Portal del socio, Check-in QR
+- Toggle ON/OFF por tenant
+- Panel activación masiva
+- Descripción de cada feature y plan requerido
+- Versionado / fecha de activación
+
+================================================================================
+ETAPA 3 - Admin Global: Roles & Permisos (1 semana)
+================================================================================
+- Definir roles: AdminGlobal, AdminTenant, Entrenador, Staff
+- Menú dinámico por rol
+- Visualización y edición de permisos por tenant
+- Validación de acceso a pantallas
+
+================================================================================
+ETAPA 4 - Admin Global: Reporting / Dashboard (2 semanas)
+================================================================================
+- Cards métricas: Total tenants, activos/inactivos, usuarios activos, planes más usados
+- Gráficos: Crecimiento mensual, actividad promedio, features más usadas
+- IA opcional:
+   - Sugerencias de features a activar
+   - Forecast de expansión
+   - Riesgo de abandono de tenants
+- Sin IA → dashboards estáticos/históricos
+
+================================================================================
+ETAPA 5 - Admin Global: Multi-Tenant & IA Toggle (1 semana)
+================================================================================
+- Middleware por tenant
+- Feature flags globales / por tenant
+- Toggle IA global y por tenant
+- Logs de actividad y toggles
+- Pantalla de fallback cuando IA desactivada
+
+================================================================================
+ETAPA 6 - Conexión con backend mock / real (2 semanas)
+================================================================================
+- API NestJS:
+   - CRUD Tenants
+   - CRUD Features
+   - Roles y permisos
+- SWR / React Query en frontend
+- Validación con Zod (tipado seguro)
+- Mock → producción seamless
+
+================================================================================
+PREPARACIÓN PARA EXPANSIÓN Gym Modules
+================================================================================
+- Carpetas listas para futuros módulos:
+  app/dashboard/members/
+  app/dashboard/plans/
+  app/dashboard/classes/
+  app/dashboard/trainers/
+  app/dashboard/payments/
+- Todos los layouts heredando AdminGlobal layout
+- Componentes Shadcn preparados: Table, Cards, Tabs, Forms, Modals
+
+================================================================================
+PRINCIPIOS CLAVE
+================================================================================
+1. Front-first: todo mock, UI lista antes de backend real
+2. Tenants first: AdminGlobal define reglas, features y permisos
+3. Escalable: cada módulo (socios, pagos, clases) se conecta después
+4. IA opcional: toggle global y por tenant, sin romper UX
+5. RBAC completo: roles y menús dinámicos
+6. Branding y dark/light listos desde el inicio
+
+================================================================================
+TIMELINE ESTIMADO (10–12 semanas)
+================================================================================
+| Etapa                           | Tiempo |
+|---------------------------------|--------|
+| Setup Monorepo + shadcn         | 1 sem  |
+| Tenants CRUD + UI                | 2 sem  |
+| Features panel                   | 1 sem  |
+| Roles & permisos                 | 1 sem  |
+| Dashboard métricas               | 2 sem  |
+| Multi-tenant & IA toggle         | 1 sem  |
+| Conexión backend mock / real     | 2 sem  |
+
+Total: 10 semanas MVP AdminGlobal
++ Expansión Gym Modules: +4–6 semanas
+
+================================================================================
+NOTAS FINALES
+================================================================================
+- Todo mock funciona sin backend y sin IA
+- IA se integra como toggle por tenant
+- Cada módulo futuro puede conectarse al layout y estructura ya existentes
+- Se recomienda crear naming consistente para features, tenants y módulos
+
+

@@ -1,0 +1,58 @@
+# Guía para Subir GymOS a GitHub
+
+Sigue estos pasos para subir tu proyecto monorepo a un nuevo repositorio de GitHub.
+
+## Prerrequisitos
+- Tener una cuenta en GitHub.
+- Tener `git` instalado en tu terminal.
+
+## Paso 1: Crear el Repositorio en GitHub
+1. Ve a [GitHub.com](https://github.com) e inicia sesión.
+2. Haz clic en el botón **"New"** (Nuevo) o ve a `github.com/new`.
+3. Nombre del repositorio: `gymos-monorepo` (o el que prefieras).
+4. Déjalo como **Público** o **Privado** según tu preferencia.
+5. **NO** marques "Add a README file" ni "Add .gitignore" (ya tenemos estos archivos localmente).
+6. Haz clic en **"Create repository"**.
+
+## Paso 2: Preparar el Proyecto Local
+Abre tu terminal en la carpeta raíz del proyecto (`/var/www/html/gymos/gymos-monorepo`).
+
+1. **Inicializar Git** (si no lo has hecho):
+   ```bash
+   git init
+   ```
+
+2. **Verificar el archivo .gitignore**:
+   Asegúrate de que existe un archivo `.gitignore` en la raíz. Debería ignorar `node_modules`, `.next`, `.env`, etc. Si ya usaste el generador de Next.js/Turbo, debería estar listo.
+
+3. **Añadir los archivos**:
+   ```bash
+   git add .
+   ```
+
+4. **Hacer el primer commit**:
+   ```bash
+   git commit -m "Initial commit: GymOS complete setup with Admin and Tenant features"
+   ```
+
+## Paso 3: Conectar y Subir
+Copia la URL de tu repositorio de GitHub (ejemplo: `https://github.com/tu-usuario/gymos-monorepo.git`).
+
+1. **Vincular el repositorio remoto**:
+   ```bash
+   git remote add origin https://github.com/TU_USUARIO/gymos-monorepo.git
+   ```
+   *(Reemplaza `TU_USUARIO` con tu nombre de usuario real)*.
+
+2. **Renombrar la rama principal a 'main'** (estándar actual):
+   ```bash
+   git branch -M main
+   ```
+
+3. **Subir los cambios**:
+   ```bash
+   git push -u origin main
+   ```
+
+## ¡Listo! 🚀
+Tu proyecto ahora debería estar visible en GitHub con todo el código y la documentación.
