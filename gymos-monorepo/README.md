@@ -1,103 +1,133 @@
-# GymOS - Sistema de Gestión para Gimnasios 🏋️‍♂️
+# Next.js Admin Template with TypeScript & Shadcn UI
 
-GymOS es una plataforma SaaS moderna diseñada para la administración integral de gimnasios y centros deportivos. Construido con tecnología de punta, ofrece una experiencia de usuario premium y herramientas robustas para administradores globales y locales.
+**Studio Admin** - Includes multiple dashboards, authentication layouts, customizable theme presets, and more.
 
-## 🚀 Tecnologías
+<img src="https://github.com/arhamkhnz/next-shadcn-admin-dashboard/blob/main/media/dashboard.png?version=5" alt="Dashboard Screenshot">
 
-Este proyecto es un **Monorepo** basado en [Turborepo](https://turbo.build/).
+Most admin templates I found, free or paid, felt cluttered, outdated, or too rigid. I built this as a cleaner alternative with features often missing in others, such as theme toggling and layout controls, while keeping the design modern, minimal, and flexible.
 
-- **Frontend**: [Next.js 15+](https://nextjs.org/) (App Router)
-- **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
-- **Estilos**: [Tailwind CSS](https://tailwindcss.com/)
-- **Componentes UI**: [shadcn/ui](https://ui.shadcn.com/)
-- **Iconos**: [Lucide React](https://lucide.dev/)
-- **Estado Global**: [Zustand](https://docs.pmnd.rs/zustand)
-- **Formularios**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **Tablas**: [TanStack Table](https://tanstack.com/table/v8)
+I’ve taken design inspiration from various sources. If you’d like credit for something specific, feel free to open an issue or reach out.
 
----
+> **View demo:** [studio admin](https://next-shadcn-admin-dashboard.vercel.app)
 
-## 🛠 Instalación y Uso
+> [!TIP]
+> I’m also working on Nuxt.js, Svelte, and React (Vite + TanStack Router) versions of this dashboard. They’ll be live soon.
 
-### Prerrequisitos
+## Features
 
-- Node.js (v18+)
-- pnpm (recomendado)
+- Built with Next.js 16, TypeScript, Tailwind CSS v4, and Shadcn UI  
+- Responsive and mobile-friendly  
+- Customizable theme presets (light/dark modes with color schemes like Tangerine, Brutalist, and more)  
+- Flexible layouts (collapsible sidebar, variable content widths)  
+- Authentication flows and screens  
+- Prebuilt dashboards (Default, CRM, Finance) with more coming soon  
+- Role-Based Access Control (RBAC) with config-driven UI and multi-tenant support *(planned)*  
 
-### Pasos
+> [!NOTE]
+> The default dashboard uses the **shadcn neutral** theme.  
+> It also includes additional color presets inspired by [Tweakcn](https://tweakcn.com):  
+>
+> - Tangerine  
+> - Neo Brutalism  
+> - Soft Pop  
+>
+> You can create more presets by following the same structure as the existing ones.
 
-1. **Instalar dependencias**:
+> Looking for the **Next.js 15** version?  
+> Check out the [`archive/next15`](https://github.com/arhamkhnz/next-shadcn-admin-dashboard/tree/archive/next15) branch.  
+> This branch contains the setup prior to upgrading to Next 16 and the React Compiler.
 
+> Looking for the **Next.js 14 + Tailwind CSS v3** version?  
+> Check out the [`archive/next14-tailwindv3`](https://github.com/arhamkhnz/next-shadcn-admin-dashboard/tree/archive/next14-tailwindv3) branch.  
+> It has a different color theme and is not actively maintained, but I try to keep it updated with major changes.  
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router), TypeScript, Tailwind CSS v4  
+- **UI Components**: Shadcn UI  
+- **Validation**: Zod  
+- **Forms & State Management**: React Hook Form, Zustand  
+- **Tables & Data Handling**: TanStack Table  
+- **Tooling & DX**: Biome, Husky  
+
+## Screens
+
+### Available
+- Default Dashboard  
+- CRM Dashboard  
+- Finance Dashboard  
+- Authentication (4 screens)
+
+### Coming Soon
+- Analytics Dashboard  
+- eCommerce Dashboard  
+- Academy Dashboard  
+- Logistics Dashboard  
+- Email Page  
+- Chat Page  
+- Calendar Page  
+- Kanban Board  
+- Invoice Page  
+- Users Management  
+- Roles Management  
+
+## Colocation File System Architecture
+
+This project follows a **colocation-based architecture** each feature keeps its own pages, components, and logic inside its route folder.  
+Shared UI, hooks, and configuration live at the top level, making the codebase modular, scalable, and easier to maintain as the app grows.
+
+For a full breakdown of the structure with examples, see the [Next Colocation Template](https://github.com/arhamkhnz/next-colocation-template).
+
+## Getting Started
+
+You can run this project locally, or deploy it instantly with Vercel.
+
+### Deploy with Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farhamkhnz%2Fnext-shadcn-admin-dashboard)
+
+_Deploy your own copy with one click._
+
+### Run locally
+
+1. **Clone the repository**
    ```bash
-   pnpm install
+   git clone https://github.com/arhamkhnz/next-shadcn-admin-dashboard.git
+   ```
+   
+2. **Navigate into the project**
+   ```bash
+    cd next-shadcn-admin-dashboard
+   ```
+   
+3. **Install dependencies**
+   ```bash
+    npm install
    ```
 
-2. **Ejecutar en desarrollo**:
-
+4. **Start the development server**
    ```bash
-   pnpm dev
+   npm run dev
    ```
 
-   El sitio estará disponible en `http://localhost:3000`.
+Your app will be running at [http://localhost:3000](http://localhost:3000)
 
-3. **Construir para producción**:
-   ```bash
-   pnpm build
-   ```
+### Formatting and Linting
 
----
-
-## 🌟 Funcionalidades Implementadas
-
-### 🔐 Autenticación y Seguridad
-
-- **Sistema de Roles (RBAC)**: Soporte para `AdminGlobal`, `AdminTenant`, `Trainer`, `Staff`, `Member`.
-- **Login Mock**: Sistema de autenticación simulado para desarrollo rápido.
-- **Protección de Rutas**: Redirección automática a login si no hay sesión.
-- **Cambiador de Roles (Dev Tool)**: Herramienta en el sidebar para probar diferentes roles al instante.
-- **Credenciales por defecto**:
-  - Contraseña Maestra: `123456`
-  - Usuario Admin Global: `admin@gymos.com`
-  - Usuario Admin Sede: `admintenant@gymos.com`
-
-### 🏢 Admin Global (Super Admin)
-
-- **Gestión de Sedes (Tenants)**:
-  - Listado completo de gimnasios registrados.
-  - Creación y edición de sedes con validación.
-  - Gestión de planes de suscripción (Enterprise, Pro, Standard).
-- **Features Globales**:
-  - Catálogo de funcionalidades del sistema.
-  - Toggles para activar/desactivar features globalmente.
-
-### 🏋️‍♂️ Admin Tenant (Administrador de Sede)
-
-- **Dashboard Operativo**: Métricas clave en tiempo real.
-- **Gestión de Miembros**:
-  - Base de datos de clientes con búsqueda y filtros.
-  - Perfiles detallados con avatares.
-  - Estados de membresía (Activo, Inactivo, Pendiente).
-- **Gestión de Staff**:
-  - Administración de entrenadores y personal.
-  - Asignación de especialidades y horarios.
-- **Clases y Agenda**:
-  - **Definición de Clases**: Configuración de tipos de actividades (Yoga, CrossFit, Spinning), duración y capacidad.
-  - **Agenda Semanal**: Calendario visual interactivo para programar sesiones con instructores asignados.
-
----
-
-## 📂 Estructura del Proyecto
-
+Format, lint, and organize imports
+```bash
+npx @biomejs/biome check --write
 ```
-gymos-monorepo/
-├── apps/
-│   └── web/              # Aplicación Frontend Next.js
-│       ├── src/app/      # Rutas (App Router)
-│       │   ├── (main)/   # Layout principal con Sidebar
-│       │   └── auth/     # Layout de autenticación
-│       ├── src/components/ # Componentes UI compartidos
-│       └── src/lib/      # Lógica de negocio y stores
-├── packages/
-│   └── contracts/        # Interfaces y tipos compartidos (TypeScript)
-└── README.md             # Esta documentación
-```
+> For more information on available rules, fixes, and CLI options, refer to the [Biome documentation](https://biomejs.dev/).
+
+---
+
+> [!IMPORTANT]  
+> This project is updated frequently. If you’re working from a fork or an older clone, pull the latest changes before syncing. Some updates may include breaking changes.
+
+---
+
+Contributions are welcome. Feel free to open issues, feature requests, or start a discussion.
+
+
+**Happy Vibe Coding!**
