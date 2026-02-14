@@ -3,10 +3,11 @@
 import { RoleGuard } from '@/components/auth/role-guard';
 import { UserRole } from '@/contracts';
 import { mockTenants } from '@/data/tenants';
+import { mockMembers } from '@/data/members';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Building, Plus, Settings, Users } from 'lucide-react';
+import { ArrowRight, Building, Plus, Settings, Users, } from 'lucide-react';
 import { useAuthStore } from '@/lib/auth/store';
 import { memberDashboardData } from '@/data/member-dashboard';
 
@@ -15,6 +16,8 @@ export default function DashboardDefaultPage() {
   const totalTenants = mockTenants.length;
   const activeTenants = mockTenants.filter((t) => t.status === 'Active').length;
   const totalUsers = mockTenants.reduce((acc, curr) => acc + curr.userCount, 0);
+  const activeMembers = mockMembers.filter((m) => m.status === 'Active').length;
+  const totalMembers = mockMembers.length;
 
   /* MEMBER DASHBOARD VIEW */
   if (user?.role === UserRole.Member) {
@@ -81,9 +84,113 @@ export default function DashboardDefaultPage() {
       );
   }
 
-  /* ADMIN/STAFF DASHBOARD VIEW */
+  /* ADMIN GLOBAL - MULTI-GYM MANAGEMENT VIEW */
+  if (user?.role === UserRole.AdminGlobal) {
+    return (
+      <RoleGuard allowedRoles={[UserRole.AdminGlobal]}>
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold tracking-tight">Resumen del Panel</h1>
+          </div>
+
+          {/* METRICS ROW */}
+          <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total de Gimnasios</CardTitle>
+                      <Building className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                      <div className="text-2xl font-bold">{totalTenants}</div>
+                      <p className="text-xs text-muted-foreground">
+                          {activeTenants} activos actualmente
+                      </p>
+                  </CardContent>
+              </Card>
+              <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total de Usuarios</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                      <div className="text-2xl font-bold">{totalUsers.toLocaleString()}</div>
+                      <p className="text-xs text-muted-foreground">
+                          En todos los gimnasios
+                      </p>
+                  </CardContent>
+              </Card>
+              <Card>
+                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Estado del Sistema</CardTitle>
+                      <Settings className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                      <div className="text-2xl font-bold text-green-600">Saludable</div>
+                      <p className="text-xs text-muted-foreground">
+                          Todos los sistemas operativos
+                      </p>
+                  </CardContent>
+              </Card>
+          </div>
+
+          {/* QUICK ACTIONS & RECENT */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="col-span-4">
+                  <CardHeader>
+                      <CardTitle>Gimnasios Recientes</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <div className="space-y-4">
+                          {mockTenants.slice(0, 5).map(tenant => (
+                              <div key={tenant.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                                  <div>
+                                      <p className="font-medium">{tenant.name}</p>
+                                      <p className="text-sm text-muted-foreground">{tenant.plan}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                       <div className={`px-2 py-1 rounded text-xs ${
+                                          tenant.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                      }`}>
+                                          {tenant.status === 'Active' ? 'Activo' : tenant.status}
+                                      </div>
+                                      <Button variant="ghost" size="icon" asChild>
+                                          <Link href={`/dashboard/tenants/${tenant.id}`}>
+                                              <ArrowRight className="h-4 w-4" />
+                                          </Link>
+                                      </Button>
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                  </CardContent>
+              </Card>
+              
+              <Card className="col-span-3">
+                  <CardHeader>
+                      <CardTitle>Acciones Rápidas</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-2">
+                      <Button className="w-full justify-start" asChild>
+                          <Link href="/dashboard/tenants">
+                              <Plus className="mr-2 h-4 w-4" /> Agregar Nuevo Gimnasio
+                          </Link>
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start" asChild>
+                           <Link href="/dashboard/features">
+                              <Settings className="mr-2 h-4 w-4" /> Gestionar Features Globales
+                          </Link>
+                      </Button>
+                  </CardContent>
+              </Card>
+          </div>
+        </div>
+      </RoleGuard>
+    );
+  }
+
+  /* ADMIN TENANT / TRAINER / STAFF - SINGLE GYM MANAGEMENT VIEW */
   return (
-    <RoleGuard allowedRoles={[UserRole.AdminGlobal, UserRole.AdminTenant, UserRole.Trainer, UserRole.Staff, UserRole.Member]}>
+    <RoleGuard allowedRoles={[UserRole.AdminTenant, UserRole.Trainer, UserRole.Staff]}>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold tracking-tight">Resumen del Panel</h1>
@@ -93,37 +200,37 @@ export default function DashboardDefaultPage() {
         <div className="grid gap-4 md:grid-cols-3">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total de Sedes</CardTitle>
-                    <Building className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Total de Miembros</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{totalTenants}</div>
+                    <div className="text-2xl font-bold">{totalMembers}</div>
                     <p className="text-xs text-muted-foreground">
-                        {activeTenants} activas actualmente
+                        {activeMembers} activos actualmente
                     </p>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total de Usuarios</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Clases Programadas</CardTitle>
+                    <Settings className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{totalUsers.toLocaleString()}</div>
+                    <div className="text-2xl font-bold">12</div>
                     <p className="text-xs text-muted-foreground">
-                        En todas las sedes
+                        Esta semana
                     </p>
                 </CardContent>
             </Card>
             <Card>
                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Estado del Sistema</CardTitle>
-                    <Settings className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Asistencias Hoy</CardTitle>
+                    <Building className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-green-600">Saludable</div>
+                    <div className="text-2xl font-bold">45</div>
                     <p className="text-xs text-muted-foreground">
-                        Todos los sistemas operativos
+                        Check-ins registrados
                     </p>
                 </CardContent>
             </Card>
@@ -133,24 +240,26 @@ export default function DashboardDefaultPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
                 <CardHeader>
-                    <CardTitle>Sedes Recientes</CardTitle>
+                    <CardTitle>Miembros Recientes</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {mockTenants.slice(0, 5).map(tenant => (
-                            <div key={tenant.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                        {mockMembers.slice(0, 5).map(member => (
+                            <div key={member.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
                                 <div>
-                                    <p className="font-medium">{tenant.name}</p>
-                                    <p className="text-sm text-muted-foreground">{tenant.plan}</p>
+                                    <p className="font-medium">{member.name}</p>
+                                    <p className="text-sm text-muted-foreground">{member.membershipPlan}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                      <div className={`px-2 py-1 rounded text-xs ${
-                                        tenant.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                        member.status === 'Active' ? 'bg-green-100 text-green-800' : 
+                                        member.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-gray-100 text-gray-800'
                                     }`}>
-                                        {tenant.status === 'Active' ? 'Activo' : tenant.status}
+                                        {member.status === 'Active' ? 'Activo' : member.status}
                                     </div>
                                     <Button variant="ghost" size="icon" asChild>
-                                        <Link href={`/dashboard/tenants/${tenant.id}`}>
+                                        <Link href={`/dashboard/members`}>
                                             <ArrowRight className="h-4 w-4" />
                                         </Link>
                                     </Button>
@@ -167,13 +276,20 @@ export default function DashboardDefaultPage() {
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                     <Button className="w-full justify-start" asChild>
-                        <Link href="/dashboard/tenants">
-                            <Plus className="mr-2 h-4 w-4" /> Agregar Nueva Sede
+                        <Link href="/dashboard/members">
+                            <Users className="mr-2 h-4 w-4" /> Ver Todos los Miembros
                         </Link>
                     </Button>
+                    {user?.role !== UserRole.Trainer && (
+                      <Button variant="outline" className="w-full justify-start" asChild>
+                          <Link href="/dashboard/finance">
+                              <Settings className="mr-2 h-4 w-4" /> Ver Finanzas
+                          </Link>
+                      </Button>
+                    )}
                     <Button variant="outline" className="w-full justify-start" asChild>
-                         <Link href="/dashboard/features">
-                            <Settings className="mr-2 h-4 w-4" /> Gestionar Features Globales
+                        <Link href="/dashboard/classes">
+                            <Settings className="mr-2 h-4 w-4" /> Gestionar Clases
                         </Link>
                     </Button>
                 </CardContent>

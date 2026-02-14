@@ -1,133 +1,206 @@
-# Next.js Admin Template with TypeScript & Shadcn UI
+# GymOS - Sistema de Gestión para Gimnasios
 
-**Studio Admin** - Includes multiple dashboards, authentication layouts, customizable theme presets, and more.
+**GymOS** es una plataforma completa de gestión para gimnasios que soporta múltiples sedes (multi-tenant) con control de acceso basado en roles y funcionalidades diseñadas para administradores, entrenadores, staff y miembros.
 
-<img src="https://github.com/arhamkhnz/next-shadcn-admin-dashboard/blob/main/media/dashboard.png?version=5" alt="Dashboard Screenshot">
+## Características Principales
 
-Most admin templates I found, free or paid, felt cluttered, outdated, or too rigid. I built this as a cleaner alternative with features often missing in others, such as theme toggling and layout controls, while keeping the design modern, minimal, and flexible.
+### 🏢 Arquitectura Multi-Tenant
 
-I’ve taken design inspiration from various sources. If you’d like credit for something specific, feel free to open an issue or reach out.
+- Gestión centralizada de múltiples gimnasios desde una sola plataforma
+- Aislamiento de datos por gimnasio (tenant)
+- Panel de administración global para supervisión de todos los gimnasios
 
-> **View demo:** [studio admin](https://next-shadcn-admin-dashboard.vercel.app)
+### 👥 Control de Acceso Basado en Roles
 
-> [!TIP]
-> I’m also working on Nuxt.js, Svelte, and React (Vite + TanStack Router) versions of this dashboard. They’ll be live soon.
+- **AdminGlobal**: Gestión completa de la plataforma y todos los gimnasios
+- **AdminTenant**: Administración del gimnasio específico
+- **Trainer**: Gestión de rutinas, clases y miembros asignados
+- **Staff**: Control de acceso y asistencia
+- **Member**: Acceso personal a rutinas, clases y progreso
 
-## Features
+### 📊 Módulos Implementados
 
-- Built with Next.js 16, TypeScript, Tailwind CSS v4, and Shadcn UI  
-- Responsive and mobile-friendly  
-- Customizable theme presets (light/dark modes with color schemes like Tangerine, Brutalist, and more)  
-- Flexible layouts (collapsible sidebar, variable content widths)  
-- Authentication flows and screens  
-- Prebuilt dashboards (Default, CRM, Finance) with more coming soon  
-- Role-Based Access Control (RBAC) with config-driven UI and multi-tenant support *(planned)*  
+#### Gestión de Miembros
 
-> [!NOTE]
-> The default dashboard uses the **shadcn neutral** theme.  
-> It also includes additional color presets inspired by [Tweakcn](https://tweakcn.com):  
->
-> - Tangerine  
-> - Neo Brutalism  
-> - Soft Pop  
->
-> You can create more presets by following the same structure as the existing ones.
+- CRUD completo de miembros
+- Estados: Activo, Inactivo, Pendiente
+- Planes de membresía: Basic, Premium, VIP
+- Historial de visitas y asistencia
 
-> Looking for the **Next.js 15** version?  
-> Check out the [`archive/next15`](https://github.com/arhamkhnz/next-shadcn-admin-dashboard/tree/archive/next15) branch.  
-> This branch contains the setup prior to upgrading to Next 16 and the React Compiler.
+#### Gestión de Ejercicios
 
-> Looking for the **Next.js 14 + Tailwind CSS v3** version?  
-> Check out the [`archive/next14-tailwindv3`](https://github.com/arhamkhnz/next-shadcn-admin-dashboard/tree/archive/next14-tailwindv3) branch.  
-> It has a different color theme and is not actively maintained, but I try to keep it updated with major changes.  
+- Catálogo de ejercicios personalizable
+- Clasificación por grupos musculares
+- Descripciones y notas técnicas
+- Vinculación con rutinas
 
-## Tech Stack
+#### Gestión de Rutinas
 
-- **Framework**: Next.js 16 (App Router), TypeScript, Tailwind CSS v4  
-- **UI Components**: Shadcn UI  
-- **Validation**: Zod  
-- **Forms & State Management**: React Hook Form, Zustand  
-- **Tables & Data Handling**: TanStack Table  
-- **Tooling & DX**: Biome, Husky  
+- Creador de rutinas con drag & drop
+- Asignación de ejercicios con sets, reps y descansos
+- Niveles de dificultad: Principiante, Intermedio, Avanzado
+- Asignación de rutinas a miembros
+- Búsqueda y filtrado de ejercicios
 
-## Screens
+#### Gestión de Clases
 
-### Available
-- Default Dashboard  
-- CRM Dashboard  
-- Finance Dashboard  
-- Authentication (4 screens)
+- Programación de sesiones
+- Control de capacidad
+- Asignación de entrenadores
+- Reservas de miembros
 
-### Coming Soon
-- Analytics Dashboard  
-- eCommerce Dashboard  
-- Academy Dashboard  
-- Logistics Dashboard  
-- Email Page  
-- Chat Page  
-- Calendar Page  
-- Kanban Board  
-- Invoice Page  
-- Users Management  
-- Roles Management  
+#### Control de Acceso
 
-## Colocation File System Architecture
+- Check-in por QR, DNI o manual
+- Validación de estado de membresía
+- Registro de asistencias
+- Control de morosos
 
-This project follows a **colocation-based architecture** each feature keeps its own pages, components, and logic inside its route folder.  
-Shared UI, hooks, and configuration live at the top level, making the codebase modular, scalable, and easier to maintain as the app grows.
+#### Finanzas
 
-For a full breakdown of the structure with examples, see the [Next Colocation Template](https://github.com/arhamkhnz/next-colocation-template).
+- Registro de pagos
+- Estados: Pagado, Pendiente, Vencido, Fallido
+- Métodos de pago: Efectivo, Transferencia, Tarjeta, MercadoPago
+- Dashboard financiero con métricas
 
-## Getting Started
+#### Gestión de Personal
 
-You can run this project locally, or deploy it instantly with Vercel.
+- Registro de entrenadores y staff
+- Especialidades y certificaciones
+- Horarios y disponibilidad
+- Biografías profesionales
 
-### Deploy with Vercel
+#### Planes de Suscripción
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farhamkhnz%2Fnext-shadcn-admin-dashboard)
+- Planes configurables (Basic, Pro, Enterprise)
+- Límites de staff y miembros
+- Funcionalidades incluidas
+- Precios y monedas
 
-_Deploy your own copy with one click._
+## Stack Tecnológico
 
-### Run locally
+- **Framework**: Next.js 16 (App Router) + TypeScript
+- **Estilos**: Tailwind CSS v4
+- **Componentes UI**: Shadcn UI
+- **Validación**: Zod
+- **Formularios**: React Hook Form
+- **Estado**: Zustand
+- **Tablas**: TanStack Table
+- **Drag & Drop**: DND Kit
+- **Íconos**: Lucide React
+- **Tooling**: Biome, Husky
 
-1. **Clone the repository**
+## Comenzar
+
+### Requisitos Previos
+
+- Node.js 18+
+- pnpm (recomendado) o npm
+
+### Instalación
+
+1. **Clonar el repositorio**
+
    ```bash
-   git clone https://github.com/arhamkhnz/next-shadcn-admin-dashboard.git
-   ```
-   
-2. **Navigate into the project**
-   ```bash
-    cd next-shadcn-admin-dashboard
-   ```
-   
-3. **Install dependencies**
-   ```bash
-    npm install
-   ```
-
-4. **Start the development server**
-   ```bash
-   npm run dev
+   git clone https://github.com/lucassebastianfiorio/gymos.git
+   cd gymos/gymos-monorepo
    ```
 
-Your app will be running at [http://localhost:3000](http://localhost:3000)
+2. **Instalar dependencias**
 
-### Formatting and Linting
+   ```bash
+   pnpm install
+   ```
 
-Format, lint, and organize imports
+3. **Iniciar servidor de desarrollo**
+   ```bash
+   pnpm dev
+   ```
+
+La aplicación estará disponible en [http://localhost:3000](http://localhost:3000)
+
+### Usuarios de Prueba
+
+Para probar diferentes roles, utiliza estas credenciales (contraseña: `123456`):
+
+- **Admin Global**: `admin@gymos.com`
+- **Admin Tenant**: `admintenant@gymos.com`
+- **Entrenador**: `trainer@gymos.com`
+- **Staff**: `staff@gymos.com`
+- **Miembro**: `member@gymos.com`
+
+## Scripts Disponibles
+
 ```bash
-npx @biomejs/biome check --write
+# Desarrollo
+pnpm dev
+
+# Compilar para producción
+pnpm build
+
+# Iniciar en producción
+pnpm start
+
+# Formatear código
+pnpm format
+
+# Verificar código (lint + format)
+pnpm check
+
+# Corregir automáticamente
+pnpm check:fix
 ```
-> For more information on available rules, fixes, and CLI options, refer to the [Biome documentation](https://biomejs.dev/).
+
+## Estructura del Proyecto
+
+```
+src/
+├── app/                    # Rutas de Next.js (App Router)
+│   ├── (auth)/            # Páginas de autenticación
+│   └── (main)/            # Páginas principales
+│       └── dashboard/     # Dashboards por rol y módulos
+├── components/            # Componentes reutilizables
+│   ├── auth/             # Componentes de autenticación
+│   └── ui/               # Componentes UI de Shadcn
+├── config/               # Configuración (navegación, rutas)
+├── contracts/            # Interfaces y tipos TypeScript
+├── data/                 # Datos mock para desarrollo
+├── lib/                  # Utilidades y helpers
+└── hooks/                # Custom React hooks
+```
+
+## Próximas Funcionalidades
+
+- [ ] Integración con APIs reales
+- [ ] Sistema de notificaciones
+- [ ] Análisis y reportes avanzados
+- [ ] App móvil (React Native)
+- [ ] Integración con pasarelas de pago
+- [ ] Sistema de reservas online
+- [ ] Gestión de inventario
+- [ ] Portal público del gimnasio
+
+## Contribuir
+
+Las contribuciones son bienvenidas. Para cambios importantes:
+
+1. Abre un issue describiendo el cambio propuesto
+2. Crea un fork del repositorio
+3. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+4. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+5. Push a la rama (`git push origin feature/AmazingFeature`)
+6. Abre un Pull Request
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+
+## Contacto
+
+Lucas Sebastián Fiorio - [@lucassebastianfiorio](https://github.com/lucassebastianfiorio)
+
+Link del Proyecto: [https://github.com/lucassebastianfiorio/gymos](https://github.com/lucassebastianfiorio/gymos)
 
 ---
 
-> [!IMPORTANT]  
-> This project is updated frequently. If you’re working from a fork or an older clone, pull the latest changes before syncing. Some updates may include breaking changes.
-
----
-
-Contributions are welcome. Feel free to open issues, feature requests, or start a discussion.
-
-
-**Happy Vibe Coding!**
+**Desarrollado con ❤️ para la gestión moderna de gimnasios**

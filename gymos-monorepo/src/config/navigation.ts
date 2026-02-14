@@ -39,7 +39,7 @@ export const navigationConfig: NavGroup[] = [
         allowedRoles: [UserRole.AdminGlobal, UserRole.AdminTenant, UserRole.Trainer, UserRole.Staff, UserRole.Member],
       },
       {
-        title: "Sedes (Tenants)",
+        title: "Gimnasios (Tenants)",
         url: "/dashboard/tenants",
         icon: Building,
         allowedRoles: [UserRole.AdminGlobal],
@@ -91,6 +91,12 @@ export const navigationConfig: NavGroup[] = [
          url: "/dashboard/routines/manage",
          icon: Dumbbell,
          allowedRoles: [UserRole.AdminTenant, UserRole.Trainer],
+      },
+      {
+        title: "Ejercicios",
+        url: "/dashboard/exercises",
+        icon: Dumbbell,
+        allowedRoles: [UserRole.AdminTenant, UserRole.Trainer],
       },
       {
          title: "Control de Acceso",

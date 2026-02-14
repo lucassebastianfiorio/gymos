@@ -33,7 +33,7 @@ export const mockPlans: SubscriptionPlan[] = [
         description: "Solución completa para grandes cadenas y centros deportivos.",
         price: 99.99,
         currency: "USD",
-        features: ["Todo lo de Pro", "Múltiples Sedes", "API Access", "Soporte Dedicado", "IA Insights"],
+        features: ["Todo lo de Pro", "Múltiples Gimnasios", "API Access", "Soporte Dedicado", "IA Insights"],
         maxStaff: 999,
         maxMembers: 9999,
         includesClasses: true,

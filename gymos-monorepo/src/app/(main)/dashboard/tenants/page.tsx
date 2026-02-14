@@ -36,16 +36,16 @@ export default function TenantsPage() {
     <RoleGuard allowedRoles={[UserRole.AdminGlobal]}>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold tracking-tight">Gestión de Sedes (Tenants)</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Gestión de Gimnasios (Tenants)</h1>
              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <Button onClick={openCreate}>
-                    <Plus className="mr-2 h-4 w-4" /> Agregar Sede
+                    <Plus className="mr-2 h-4 w-4" /> Agregar Gimnasio
                 </Button>
                 <SheetContent>
                     <SheetHeader>
-                    <SheetTitle>{editingTenant ? 'Editar Sede' : 'Agregar Nueva Sede'}</SheetTitle>
+                    <SheetTitle>{editingTenant ? 'Editar Gimnasio' : 'Agregar Nuevo Gimnasio'}</SheetTitle>
                     <SheetDescription>
-                        {editingTenant ? `Actualizar detalles para ${editingTenant.name}` : 'Crear una nueva sede en la plataforma.'}
+                        {editingTenant ? `Actualizar detalles para ${editingTenant.name}` : 'Crear un nuevo gimnasio en la plataforma.'}
                     </SheetDescription>
                     </SheetHeader>
                     <div className="py-4">
