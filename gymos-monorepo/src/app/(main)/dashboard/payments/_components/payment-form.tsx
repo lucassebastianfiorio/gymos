@@ -46,11 +46,15 @@ import { mockLocations } from "@/data/locations"
 const formSchema = z.object({
   memberId: z.string({ required_error: "Seleccione un miembro" }),
   concept: z.string().min(3, "El concepto es requerido"),
-  amount: z.coerce.number().min(0.01, "El monto debe ser mayor a 0"),
+  totalAmount: z.coerce.number().min(0.01, "El total debe ser mayor a 0"),
+  amount: z.coerce.number().min(0.01, "El monto pagado debe ser mayor a 0"),
   locationId: z.string({ required_error: "Seleccione una sucursal" }),
   method: z.enum(["Cash", "Card", "Transfer", "MercadoPago"]),
   date: z.date(),
   notes: z.string().optional(),
+}).refine(data => data.amount <= data.totalAmount, {
+  message: "El pago no puede ser mayor al total",
+  path: ["amount"]
 })
 
 interface PaymentFormProps {
@@ -64,22 +68,27 @@ export function PaymentForm({ onSubmit, onCancel }: PaymentFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      totalAmount: 0,
       amount: 0,
       date: new Date(),
       method: "Cash",
       notes: "",
-      locationId: mockLocations[0]?.id || "", // Default to first location
+      locationId: mockLocations[0]?.id || "", 
     },
   })
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const selectedMember = mockMembers.find(m => m.id === values.memberId)
     
+    const status = values.amount < values.totalAmount ? "Partial" : "Paid"
+    
     onSubmit({
       ...values,
       memberName: selectedMember ? (selectedMember.name || `${selectedMember.firstName} ${selectedMember.lastName}`) : "Unknown",
-      status: "Paid", // If we are registering a payment, it's paid
-      currency: "ARS", // Default currency
+      amount: values.totalAmount, // Total expected
+      paidAmount: values.amount, // Total paid so far
+      status,
+      currency: "ARS",
     })
   }
 
@@ -156,13 +165,30 @@ export function PaymentForm({ onSubmit, onCancel }: PaymentFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="amount"
+            name="totalAmount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Monto (ARS)</FormLabel>
+                <FormLabel>Total a Cobrar (ARS)</FormLabel>
                 <FormControl>
                   <Input type="number" step="0.01" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pago Actual / Entrega (ARS)</FormLabel>
+                <FormControl>
+                  <Input type="number" step="0.01" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Ingresa el monto que el cliente está pagando hoy.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

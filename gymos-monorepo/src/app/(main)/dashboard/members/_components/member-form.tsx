@@ -32,10 +32,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Member } from "@/contracts"
+import { Member, GymService } from "@/contracts"
 import { mockLocations } from "@/data/locations"
-// import { mockRoutines } from "@/data/routines" 
+import { getGymServices } from "@/data/services"
 import { mockStaff, getTrainers } from "@/data/staff"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "Mínimo 2 caracteres" }),
@@ -44,9 +45,9 @@ const formSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
   phone: z.string().min(8, { message: "Teléfono requerido" }),
   
-  membershipPlan: z.enum(["Basic", "Premium", "VIP"]),
-  planType: z.enum(["monthly", "per_class", "quarterly", "annual"]),
-  planExpirationDate: z.date({ required_error: "Fecha de vencimiento requerida" }),
+  membershipPlan: z.enum(["Basic", "Premium", "VIP"]).optional(),
+  planType: z.enum(["monthly", "per_class", "quarterly", "annual"]).optional(),
+  planExpirationDate: z.date().optional(),
   status: z.enum(["Active", "Inactive", "Pending", "Suspended"]),
   
   assignedLocationId: z.string().optional(),
@@ -54,6 +55,7 @@ const formSchema = z.object({
   assignedRoutineId: z.string().optional(),
   
   observations: z.string().optional(),
+  assignedServiceIds: z.array(z.string()).default([]),
 })
 
 interface MemberFormProps {
@@ -86,8 +88,11 @@ export function MemberForm({ defaultValues, onSubmit }: MemberFormProps) {
       assignedRoutineId: defaultValues?.assignedRoutineId || undefined,
       
       observations: defaultValues?.observations || "",
+      assignedServiceIds: defaultValues?.assignedServiceIds || [],
     },
   })
+
+  const services = getGymServices("tenant_1")
 
   // Trainers helper
   const trainers = getTrainers()
@@ -291,6 +296,60 @@ export function MemberForm({ defaultValues, onSubmit }: MemberFormProps) {
                       <SelectItem value="Suspended">Suspendido</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        {/* Services Assignments */}
+        <div className="space-y-4 pt-4 border-t">
+          <h3 className="text-lg font-medium">Servicios Adicionales / Standalone</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="assignedServiceIds"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel className="text-base">Servicios</FormLabel>
+                    <FormDescription>
+                      Seleccione los servicios específicos que el miembro desea contratar.
+                    </FormDescription>
+                  </div>
+                  {services.map((service) => (
+                    <FormField
+                      key={service.id}
+                      control={form.control}
+                      name="assignedServiceIds"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={service.id}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(service.id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, service.id])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value: string) => value !== service.id
+                                        )
+                                      )
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer">
+                              {service.name} ({new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(service.price || 0)})
+                            </FormLabel>
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  ))}
                   <FormMessage />
                 </FormItem>
               )}

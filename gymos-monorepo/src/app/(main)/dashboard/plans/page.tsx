@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Check, Edit, Trash } from "lucide-react"
+import { Plus, Check, Edit, Trash, Users, Calendar, Dumbbell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -112,6 +112,16 @@ export default function PlansPage() {
                      / {plan.durationMonths} {plan.durationMonths === 1 ? 'mes' : 'meses'}
                   </span>
                 </CardDescription>
+                <div className="flex gap-2 mt-2">
+                    <Badge variant="outline" className="text-[10px] py-0">
+                        <Calendar className="mr-1 h-3 w-3" /> {plan.attendanceDaysPerWeek || 3} días/sem
+                    </Badge>
+                    {plan.isPersonalizedTraining && (
+                        <Badge variant="outline" className="text-[10px] py-0 border-primary/50 text-primary">
+                            <Dumbbell className="mr-1 h-3 w-3" /> Personalizado
+                        </Badge>
+                    )}
+                </div>
               </CardHeader>
               <CardContent className="flex-1">
                 <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>

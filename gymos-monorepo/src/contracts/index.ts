@@ -76,6 +76,7 @@ export interface Member extends User {
   assignedTrainerId?: string;
   assignedLocationId?: string;
   assignedRoutineId?: string;
+  assignedServiceIds?: string[];
   
   // Notes
   observations?: string; // health issues, medical notes, etc
@@ -113,6 +114,7 @@ export interface Payment {
   basePlanAmount: number; // original plan price
   lateFee: number; // calculated late fee
   interest: number; // calculated interest
+  paidAmount: number; // total amount paid so far
   currency: string;
   
   // Status and dates
@@ -136,8 +138,10 @@ export interface LatePaymentSettings {
   tenantId: string;
   interestPerDay: number; // percentage (e.g., 0.5 = 0.5% per day)
   lateFee: number; // fixed amount
-  suspensionAfterDays: number; // auto-suspend member after X days
   gracePeriodDays: number; // days before applying fees
+  suspensionAfterDays: number; // auto-suspend member after X days
+  cancellationAfterDays: number; // auto-cancel subscription after X days
+  upcomingPaymentNoticeDays: number; // days before due date to show alert
 }
 
 // ============================================
@@ -261,6 +265,29 @@ export interface SubscriptionPlan {
   status: 'Active' | 'Archived';
   tenantId?: string; // if tenant-specific
   locationId?: string; // if location-specific, null = all locations
+  
+  // New Subscription/Membership Fields
+  durationMonths: number;
+  isActive: boolean; // Added for UI consistency
+  maxLocations: number; // Added to fix lint
+
+  // Custom Gym Fields
+  attendanceDaysPerWeek?: number;
+  isPersonalizedTraining?: boolean;
+}
+
+// ============================================
+// GYM SERVICES
+// ============================================
+
+export interface GymService {
+  id: string;
+  tenantId: string;
+  name: string;
+  description: string;
+  price?: number;
+  category: 'Wellness' | 'Nutrition' | 'Training' | 'Special' | 'Other';
+  isActive: boolean;
 }
 
 // ============================================

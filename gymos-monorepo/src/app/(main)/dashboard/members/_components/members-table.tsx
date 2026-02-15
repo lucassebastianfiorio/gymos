@@ -33,11 +33,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { DataTable } from "@/components/data-table/data-table"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 
 export const getColumns = (onEdit: (member: Member) => void): ColumnDef<Member>[] => [
   {
     accessorKey: "name",
-    header: "Miembro",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Miembro" />,
     cell: ({ row }) => (
         <div className="flex items-center gap-3">
             <Avatar>
@@ -53,7 +56,7 @@ export const getColumns = (onEdit: (member: Member) => void): ColumnDef<Member>[
   },
   {
     accessorKey: "membershipPlan",
-    header: "Plan",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Plan" />,
     cell: ({ row }) => {
         const plan = row.getValue("membershipPlan") as string;
         return <Badge variant={plan === 'VIP' ? 'default' : plan === 'Premium' ? 'secondary' : 'outline'}>{plan}</Badge>
@@ -61,7 +64,7 @@ export const getColumns = (onEdit: (member: Member) => void): ColumnDef<Member>[
   },
   {
     accessorKey: "status",
-    header: "Estado",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
     cell: ({ row }) => {
         const status = row.getValue("status") as string;
         return (
@@ -80,7 +83,7 @@ export const getColumns = (onEdit: (member: Member) => void): ColumnDef<Member>[
   },
   {
     accessorKey: "lastVisit",
-    header: "Última Visita",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Última Visita" />,
     cell: ({ row }) => {
         const date = row.original.lastVisit;
         return date ? <span className="text-sm text-muted-foreground">{date.toLocaleDateString()}</span> : '-';
@@ -155,66 +158,10 @@ export function MembersTable({ data, onEdit }: MembersTableProps) {
         {/* Futuro: Filtros por Plan/Estado aquí */}
       </div>
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Sin resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <DataTable table={table} columns={columns} />
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Siguiente
-        </Button>
+      <div className="py-4">
+        <DataTablePagination table={table} />
       </div>
     </div>
   )

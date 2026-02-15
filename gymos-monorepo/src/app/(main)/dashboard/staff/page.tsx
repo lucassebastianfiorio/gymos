@@ -9,14 +9,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Mail, Clock, Trophy, MapPin, Pencil } from 'lucide-react';
+import { Plus, Mail, Clock, Trophy, MapPin, Pencil, LayoutGrid, List } from 'lucide-react';
 import { EditStaffDialog } from './_components/edit-staff-dialog';
+import { StaffTable } from './_components/staff-table';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 export default function StaffPage() {
     const [staffList, setStaffList] = useState<Staff[]>(mockStaff);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
+    const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+    const [searchTerm, setSearchTerm] = useState("");
 
     const handleEdit = (staff: Staff) => {
         setEditingStaff(staff);
@@ -67,8 +71,42 @@ export default function StaffPage() {
                 </Button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {staffList.map(staff => (
+            <div className="flex items-center justify-between gap-4">
+                <Input 
+                    placeholder="Buscar por nombre, email o especialidad..." 
+                    className="max-w-md"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="flex items-center border rounded-md p-1 bg-muted/50">
+                    <Button 
+                        variant={viewMode === 'grid' ? 'secondary' : 'ghost'} 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
+                        onClick={() => setViewMode('grid')}
+                    >
+                        <LayoutGrid className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                        variant={viewMode === 'table' ? 'secondary' : 'ghost'} 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
+                        onClick={() => setViewMode('table')}
+                    >
+                        <List className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
+
+            {viewMode === 'grid' ? (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {staffList
+                        .filter(s => 
+                            s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            s.specialties.some(sp => sp.toLowerCase().includes(searchTerm.toLowerCase()))
+                        )
+                        .map(staff => (
                     <Card key={staff.id} className="overflow-hidden flex flex-col">
                         <CardHeader className="flex flex-row items-center gap-4 pb-2">
                              <Avatar className="h-12 w-12">
@@ -130,6 +168,15 @@ export default function StaffPage() {
                     </Card>
                 ))}
             </div>
+            ) : (
+                <StaffTable 
+                    data={staffList.filter(s => 
+                        s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                        s.email.toLowerCase().includes(searchTerm.toLowerCase())
+                    )} 
+                    onEdit={handleEdit} 
+                />
+            )}
 
             <EditStaffDialog 
                 open={isDialogOpen} 

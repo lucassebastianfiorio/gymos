@@ -32,6 +32,8 @@ const formSchema = z.object({
   description: z.string().optional(),
   features: z.array(z.string()),
   maxLocations: z.coerce.number().min(1),
+  attendanceDaysPerWeek: z.coerce.number().min(1).max(7).optional(),
+  isPersonalizedTraining: z.boolean().default(false),
 })
 
 interface PlanFormProps {
@@ -49,7 +51,9 @@ export function PlanForm({ initialData, onSubmit, onCancel }: PlanFormProps) {
       durationMonths: initialData?.durationMonths || 1,
       description: initialData?.description || "",
       features: initialData?.features || [],
-      maxLocations: 1, // Default
+      maxLocations: initialData?.maxLocations || 1,
+      attendanceDaysPerWeek: initialData?.attendanceDaysPerWeek || 3,
+      isPersonalizedTraining: initialData?.isPersonalizedTraining || false,
     },
   })
 
@@ -108,6 +112,44 @@ export function PlanForm({ initialData, onSubmit, onCancel }: PlanFormProps) {
                   <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="attendanceDaysPerWeek"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Días de Asistencia / Semana</FormLabel>
+                <FormControl>
+                  <Input type="number" min={1} max={7} {...field} />
+                </FormControl>
+                <FormDescription>Máximo de días por semana.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="isPersonalizedTraining"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mt-auto">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Entrenamiento Personalizado</FormLabel>
+                  <FormDescription>
+                    Incluye seguimiento 1 a 1.
+                  </FormDescription>
+                </div>
               </FormItem>
             )}
           />

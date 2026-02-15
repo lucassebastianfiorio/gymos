@@ -5,22 +5,28 @@ export const mockLatePaymentSettings: LatePaymentSettings[] = [
         tenantId: 'tenant_1',
         interestPerDay: 0.5, // 0.5% per day
         lateFee: 500, // $500 fixed late fee
-        suspensionAfterDays: 15, // Suspend member after 15 days
-        gracePeriodDays: 3, // 3 days grace period before applying fees
+        gracePeriodDays: 3,
+        suspensionAfterDays: 10,
+        cancellationAfterDays: 15,
+        upcomingPaymentNoticeDays: 7,
     },
     {
         tenantId: 'tenant_2',
         interestPerDay: 1.0, // 1% per day
         lateFee: 300,
-        suspensionAfterDays: 10,
         gracePeriodDays: 5,
+        suspensionAfterDays: 10,
+        cancellationAfterDays: 20,
+        upcomingPaymentNoticeDays: 5,
     },
     {
         tenantId: 'tenant_3',
         interestPerDay: 0.3,
         lateFee: 200,
-        suspensionAfterDays: 20,
         gracePeriodDays: 7,
+        suspensionAfterDays: 15,
+        cancellationAfterDays: 30,
+        upcomingPaymentNoticeDays: 10,
     },
 ];
 
@@ -39,8 +45,10 @@ export function updateLatePaymentSettings(tenantId: string, settings: Partial<La
             tenantId,
             interestPerDay: settings.interestPerDay ?? 0,
             lateFee: settings.lateFee ?? 0,
-            suspensionAfterDays: settings.suspensionAfterDays ?? 30,
             gracePeriodDays: settings.gracePeriodDays ?? 0,
+            suspensionAfterDays: settings.suspensionAfterDays ?? 10,
+            cancellationAfterDays: settings.cancellationAfterDays ?? 30,
+            upcomingPaymentNoticeDays: settings.upcomingPaymentNoticeDays ?? 7,
         });
         return true;
     }

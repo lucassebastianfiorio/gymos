@@ -12,7 +12,12 @@ export const mockPlans: SubscriptionPlan[] = [
         maxMembers: 100,
         includesClasses: false,
         includesApp: false,
-        status: "Active"
+        status: "Active",
+        durationMonths: 1,
+        isActive: true,
+        maxLocations: 1,
+        attendanceDaysPerWeek: 3,
+        isPersonalizedTraining: false
     },
     {
         id: "plan_pro",
@@ -25,7 +30,12 @@ export const mockPlans: SubscriptionPlan[] = [
         maxMembers: 500,
         includesClasses: true,
         includesApp: true,
-        status: "Active"
+        status: "Active",
+        durationMonths: 3,
+        isActive: true,
+        maxLocations: 1,
+        attendanceDaysPerWeek: 5,
+        isPersonalizedTraining: true
     },
     {
         id: "plan_enterprise",
@@ -38,6 +48,11 @@ export const mockPlans: SubscriptionPlan[] = [
         maxMembers: 9999,
         includesClasses: true,
         includesApp: true,
-        status: "Active"
+        status: "Active",
+        durationMonths: 12,
+        isActive: true,
+        maxLocations: 1,
+        attendanceDaysPerWeek: 7,
+        isPersonalizedTraining: true
     }
 ];

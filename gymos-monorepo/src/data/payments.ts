@@ -20,6 +20,7 @@ export const mockPayments: Payment[] = [
         basePlanAmount: 12000,
         lateFee: 0,
         interest: 0,
+        paidAmount: 12000,
         amount: 12000,
         currency: 'ARS',
         status: 'Paid',
@@ -40,6 +41,7 @@ export const mockPayments: Payment[] = [
         basePlanAmount: 8000,
         lateFee: 0,
         interest: 0,
+        paidAmount: 0,
         amount: 8000,
         currency: 'ARS',
         status: 'Pending',
@@ -58,6 +60,7 @@ export const mockPayments: Payment[] = [
         basePlanAmount: 10000,
         lateFee: 500, // Applied late fee
         interest: 950, // 19 days * 0.5% = 9.5%
+        paidAmount: 0,
         amount: 11450,
         currency: 'ARS',
         status: 'Overdue',
@@ -77,6 +80,7 @@ export const mockPayments: Payment[] = [
         basePlanAmount: 15000,
         lateFee: 0,
         interest: 0,
+        paidAmount: 15000,
         amount: 15000,
         currency: 'ARS',
         status: 'Paid',
@@ -97,6 +101,7 @@ export const mockPayments: Payment[] = [
         basePlanAmount: 12000,
         lateFee: 500,
         interest: 1200, // 20 days * 0.5%
+        paidAmount: 0,
         amount: 13700,
         currency: 'ARS',
         status: 'Overdue',
@@ -116,6 +121,7 @@ export const mockPayments: Payment[] = [
         basePlanAmount: 120000, // Plan anual
         lateFee: 0,
         interest: 0,
+        paidAmount: 120000,
         amount: 120000,
         currency: 'ARS',
         status: 'Paid',
@@ -136,7 +142,8 @@ export const mockPayments: Payment[] = [
         basePlanAmount: 12000,
         lateFee: 0,
         interest: 0,
-        amount: 12000,
+        paidAmount: 0,
+        amount: 120000,
         currency: 'ARS',
         status: 'Pending',
         method: 'Cash',

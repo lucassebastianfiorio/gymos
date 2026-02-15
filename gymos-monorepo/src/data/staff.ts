@@ -58,6 +58,10 @@ export function getStaffByLocation(locationId: string): Staff[] {
     );
 }
 
+export function getStaffByTenant(tenantId: string): Staff[] {
+    return mockStaff.filter(s => s.tenantId === tenantId);
+}
+
 export function getStaffByRole(role: UserRole): Staff[] {
     return mockStaff.filter(s => s.role === role);
 }

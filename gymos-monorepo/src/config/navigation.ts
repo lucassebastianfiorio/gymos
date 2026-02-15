@@ -11,7 +11,8 @@ import {
   Dumbbell,
   CalendarDays,
   MapPin,
-  Percent
+  Percent,
+  Sparkles
 } from "lucide-react";
 import { UserRole } from "@/contracts";
 
@@ -117,7 +118,13 @@ export const navigationConfig: NavGroup[] = [
          url: "/dashboard/staff",
          icon: Users,
          allowedRoles: [UserRole.AdminTenant],
-      }
+       },
+       {
+         title: "Servicios",
+         url: "/dashboard/services",
+         icon: Sparkles,
+         allowedRoles: [UserRole.AdminTenant],
+       }
     ]
   },
   {

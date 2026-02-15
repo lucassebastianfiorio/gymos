@@ -37,6 +37,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { DataTable } from "@/components/data-table/data-table"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { DataTablePagination } from "@/components/data-table/data-table-pagination"
+import { getSortedRowModel, SortingState } from "@tanstack/react-table"
 
 // Simplified columns definition to accept handling edit outside if needed, 
 // BUT simply adding the column definition inside a hook or component is cleaner 
@@ -46,12 +50,12 @@ import {
 export const getColumns = (onEdit: (tenant: Tenant) => void): ColumnDef<Tenant>[] => [
   {
     accessorKey: "name",
-    header: "Nombre",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Nombre" />,
     cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "plan",
-    header: "Plan",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Plan" />,
     cell: ({ row }) => {
         const plan = row.getValue("plan") as string;
         return <Badge variant={plan === 'Enterprise' ? 'default' : plan === 'Pro' ? 'secondary' : 'outline'}>{plan}</Badge>
@@ -59,7 +63,7 @@ export const getColumns = (onEdit: (tenant: Tenant) => void): ColumnDef<Tenant>[
   },
   {
     accessorKey: "status",
-    header: "Estado",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Estado" />,
     cell: ({ row }) => {
         const status = row.getValue("status") as string;
         return (
@@ -78,7 +82,7 @@ export const getColumns = (onEdit: (tenant: Tenant) => void): ColumnDef<Tenant>[
   },
   {
     accessorKey: "userCount",
-    header: "Usuarios",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Usuarios" />,
   },
   {
     id: "actions",
@@ -112,6 +116,7 @@ export const getColumns = (onEdit: (tenant: Tenant) => void): ColumnDef<Tenant>[
 
 export function TenantsTable({ data, onEdit }: TenantsTableProps) {
     const [globalFilter, setGlobalFilter] = useState('')
+    const [sorting, setSorting] = useState<SortingState>([])
     const columns = getColumns(onEdit);
 
   const table = useReactTable({
@@ -120,8 +125,11 @@ export function TenantsTable({ data, onEdit }: TenantsTableProps) {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
         globalFilter,
+        sorting,
     },
     onGlobalFilterChange: setGlobalFilter,
   })
@@ -137,66 +145,10 @@ export function TenantsTable({ data, onEdit }: TenantsTableProps) {
         />
       </div>
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Sin resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <DataTable table={table} columns={columns} />
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Siguiente
-        </Button>
+      <div className="py-4">
+        <DataTablePagination table={table} />
       </div>
     </div>
   )

@@ -32,16 +32,20 @@
 
 - **Perfil Completo**: Datos personales, DNI, datos de contacto y observaciones
 - **Asignaciones**: Vinculación con Entrenador, Sucursal y Plan
+- **Servicios Específicos**: Asignación de servicios independientes (Nutricionista, Sauna, etc.) durante el registro
 - **Historial**: Registro de visitas, pagos y cambios de estado
 - **Estados**: Activo, Inactivo, Pendiente, Suspendido
 
 #### 💰 Finanzas y Pagos
 
 - **Registro de Pagos**: Interfaz para registrar transacciones por miembro con integración de sucursal
+- **Pagos Parciales**: Soporte para cobrar señas o cuotas parciales, con seguimiento de saldo pendiente
+- **Alertas Inteligentes**: Notificaciones de pagos vencidos y próximos vencimientos configurables
+- **Auto-scroll**: Navegación fluida entre alertas y transacciones detalladas
 - **Control de Mora**: Detección automática de pagos vencidos con intereses configurables
 - **Analytics**: Gráficos interactivos de ingresos totales y distribución por sucursal
 - **Dashboards**: Vistas comparativas del rendimiento financiero entre sedes
-- **Configuración Financiera**: Ajuste de intereses diarios, días de gracia y multas fijas
+- **Configuración Financiera**: Ajuste de intereses diarios, días de gracia, multas fijas y avisos previos
 
 #### 💵 Caja (Cash Register)
 
