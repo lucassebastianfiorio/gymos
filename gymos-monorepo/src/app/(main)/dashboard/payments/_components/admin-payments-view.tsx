@@ -31,16 +31,30 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { PaymentForm } from "./payment-form"
+import { FinanceCharts } from "./finance-charts"
 import { mockPayments, getOverduePayments, calculatePaymentTotal } from "@/data/payments"
 import { mockMembers } from "@/data/members"
 import { mockLocations } from "@/data/locations"
 import { Payment } from "@/contracts"
 import { toast } from "sonner"
+import { useAuthStore } from "@/lib/auth/store"
+import { UserRole } from "@/contracts"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function AdminPaymentsView() {
+  const { user, selectedLocationId } = useAuthStore()
   const [payments, setPayments] = useState<Payment[]>(mockPayments.sort((a, b) => b.date.getTime() - a.date.getTime()))
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [locationFilter, setLocationFilter] = useState<string | "all">(
+    user?.role === UserRole.Staff && selectedLocationId ? selectedLocationId : "all"
+  )
 
   const overduePayments = getOverduePayments()
   const totalRevenue = payments
@@ -71,10 +85,12 @@ export function AdminPaymentsView() {
     toast.success("Pago registrado correctamente")
   }
 
-  const filteredPayments = payments.filter(payment => 
-    payment.memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    payment.concept.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredPayments = payments.filter(payment => {
+    const matchesSearch = payment.memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          payment.concept.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLocation = locationFilter === "all" || payment.locationId === locationFilter;
+    return matchesSearch && matchesLocation;
+  })
 
   const getLocationName = (id?: string) => {
     if (!id) return "-"
@@ -124,8 +140,25 @@ export function AdminPaymentsView() {
         </Card>
       </div>
 
+      <FinanceCharts payments={payments} tenantId={user?.tenantId || ""} />
+
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2 w-full sm:w-auto">
+          {user?.role !== UserRole.Staff && (
+            <Select value={locationFilter} onValueChange={setLocationFilter}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Todas las sucursales" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las sucursales</SelectItem>
+                {mockLocations.filter(l => l.tenantId === user?.tenantId).map(loc => (
+                  <SelectItem key={loc.id} value={loc.id}>
+                    {loc.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Input 
             placeholder="Buscar por miembro o concepto..." 
             className="w-full sm:w-[300px]"

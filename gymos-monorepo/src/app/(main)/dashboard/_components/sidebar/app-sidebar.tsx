@@ -23,6 +23,7 @@ import { RoleSwitcher } from "@/components/auth/role-switcher";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+import { BranchSelector } from "./branch-selector";
 
 const _data = {
   navSecondary: [
@@ -98,6 +99,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <BranchSelector />
       </SidebarHeader>
       <SidebarContent>
         {/* We cast to any because NavMain expects likely different types from strict accumulation, 

@@ -5,8 +5,10 @@ import { USERS_BY_EMAIL } from '@/data/users';
 
 interface AuthState {
   user: User | null;
+  selectedLocationId: string | null;
   login: (email: string, password?: string) => boolean;
   logout: () => void;
+  setSelectedLocationId: (locationId: string | null) => void;
 }
 
 const getRoleFromEmail = (email: string): UserRole => {
@@ -25,6 +27,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
+      selectedLocationId: null,
       login: (email: string, password?: string) => {
         // Mock password validation
         if (password && password !== '123456') {
@@ -41,10 +44,11 @@ export const useAuthStore = create<AuthState>()(
             avatarUrl: `https://i.pravatar.cc/150?u=${email}`
         };
 
-        set({ user });
+        set({ user, selectedLocationId: (user as any).assignedLocationIds?.[0] || null });
         return true;
       },
-      logout: () => set({ user: null }),
+      logout: () => set({ user: null, selectedLocationId: null }),
+      setSelectedLocationId: (locationId: string | null) => set({ selectedLocationId: locationId }),
     }),
     {
       name: 'gymos-auth-storage',

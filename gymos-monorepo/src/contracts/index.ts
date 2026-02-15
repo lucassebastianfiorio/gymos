@@ -316,3 +316,46 @@ export interface CheckIn {
   deniedReason?: string; // e.g. "Quota Expired"
   tenantId: string;
 }
+
+// ============================================
+// CASH REGISTER (CAJA)
+// ============================================
+
+export type CashRegisterStatus = 'Open' | 'Closed';
+export type CashMovementType = 'Income' | 'Expense' | 'Withdrawal' | 'Adjustment';
+
+export interface CashRegisterSession {
+  id: string;
+  tenantId: string;
+  locationId: string;
+  openedBy: string; // Staff ID
+  openedByName?: string;
+  closedBy?: string; // Staff ID
+  closedByName?: string;
+  
+  openedAt: Date;
+  closedAt?: Date;
+  
+  openingBalance: number;
+  expectedBalance?: number;
+  closingBalance?: number; // Actual counted money
+  
+  status: CashRegisterStatus;
+  notes?: string;
+}
+
+export interface CashMovement {
+  id: string;
+  sessionId: string;
+  tenantId: string;
+  locationId: string;
+  type: CashMovementType;
+  amount: number;
+  concept: string;
+  date: Date;
+  performedBy: string; // Staff ID
+  performedByName?: string;
+  paymentId?: string; // Reference to Payment if it's an Income from a member
+  notes?: string;
+}
+

@@ -21,11 +21,12 @@
 
 ### 📊 Módulos Implementados
 
-#### 📍 Gestión de Sucursales (Nuevo)
+#### 📍 Gestión de Sucursales
 
 - **Multi-sede**: Creación y gestión de múltiples ubicaciones físicas
+- **Contexto de Trabajo**: Selector de sucursal para staff que trabajan en múltiples sedes
 - **Asignación de Staff**: Vinculación de personal a sedes específicas
-- **Reportes por Sede**: Filtrado de métricas y miembros por ubicación
+- **Reportes por Sede**: Filtrado de métricas, pagos y miembros por ubicación
 
 #### 👥 Gestión de Miembros
 
@@ -36,10 +37,19 @@
 
 #### 💰 Finanzas y Pagos
 
-- **Registro de Pagos**: Interfaz para registrar transacciones por miembro
-- **Control de Mora**: Detección automática de pagos vencidos
+- **Registro de Pagos**: Interfaz para registrar transacciones por miembro con integración de sucursal
+- **Control de Mora**: Detección automática de pagos vencidos con intereses configurables
+- **Analytics**: Gráficos interactivos de ingresos totales y distribución por sucursal
+- **Dashboards**: Vistas comparativas del rendimiento financiero entre sedes
 - **Configuración Financiera**: Ajuste de intereses diarios, días de gracia y multas fijas
-- **Dashboard Financiero**: Vista global de ingresos, pagos pendientes y vencidos
+
+#### 💵 Caja (Cash Register)
+
+- **Control Diario**: Apertura y cierre de caja por sucursal y turno
+- **Movimientos**: Registro detallado de Ingresos, Egresos y Gastos operativos
+- **Retiros de Administración**: Flujo específico para retiro de fondos por parte de gerencia
+- **Balance en Tiempo Real**: Cálculo automático de saldo esperado vs contado
+- **Responsables**: Trazabilidad completa de quién realizó cada movimiento
 
 #### 💪 Gestión de Rutinas y Ejercicios
 

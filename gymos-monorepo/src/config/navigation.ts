@@ -82,6 +82,12 @@ export const navigationConfig: NavGroup[] = [
         icon: Banknote,
         allowedRoles: [UserRole.AdminTenant, UserRole.Staff],
       },
+      {
+        title: "Caja",
+        url: "/dashboard/finance/caja",
+        icon: Banknote,
+        allowedRoles: [UserRole.AdminTenant, UserRole.Staff],
+      },
        {
         title: "Miembros",
         url: "/dashboard/members",
