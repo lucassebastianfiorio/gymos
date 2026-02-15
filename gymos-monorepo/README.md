@@ -8,74 +8,62 @@
 
 - Gestión centralizada de múltiples gimnasios desde una sola plataforma
 - Aislamiento de datos por gimnasio (tenant)
+- **Feature Flags**: Activación/desactivación de módulos (ej. Pagos, Clases) por gimnasio
 - Panel de administración global para supervisión de todos los gimnasios
 
 ### 👥 Control de Acceso Basado en Roles
 
-- **AdminGlobal**: Gestión completa de la plataforma y todos los gimnasios
-- **AdminTenant**: Administración del gimnasio específico
-- **Trainer**: Gestión de rutinas, clases y miembros asignados
-- **Staff**: Control de acceso y asistencia
-- **Member**: Acceso personal a rutinas, clases y progreso
+- **AdminGlobal**: Gestión completa de la plataforma, tenants y feature flags
+- **AdminTenant**: Administración total de su gimnasio, configuración financiera y sucursales
+- **Trainer**: Gestión de rutinas, clases y seguimiento de miembros
+- **Staff**: Registro de pagos, control de acceso y gestión de miembros
+- **Member**: Portal personal para ver rutinas, historial de pagos y progreso
 
 ### 📊 Módulos Implementados
 
-#### Gestión de Miembros
+#### 📍 Gestión de Sucursales (Nuevo)
 
-- CRUD completo de miembros
-- Estados: Activo, Inactivo, Pendiente
-- Planes de membresía: Basic, Premium, VIP
-- Historial de visitas y asistencia
+- **Multi-sede**: Creación y gestión de múltiples ubicaciones físicas
+- **Asignación de Staff**: Vinculación de personal a sedes específicas
+- **Reportes por Sede**: Filtrado de métricas y miembros por ubicación
 
-#### Gestión de Ejercicios
+#### 👥 Gestión de Miembros
 
-- Catálogo de ejercicios personalizable
-- Clasificación por grupos musculares
-- Descripciones y notas técnicas
-- Vinculación con rutinas
+- **Perfil Completo**: Datos personales, DNI, datos de contacto y observaciones
+- **Asignaciones**: Vinculación con Entrenador, Sucursal y Plan
+- **Historial**: Registro de visitas, pagos y cambios de estado
+- **Estados**: Activo, Inactivo, Pendiente, Suspendido
 
-#### Gestión de Rutinas
+#### 💰 Finanzas y Pagos
 
-- Creador de rutinas con drag & drop
-- Asignación de ejercicios con sets, reps y descansos
-- Niveles de dificultad: Principiante, Intermedio, Avanzado
-- Asignación de rutinas a miembros
-- Búsqueda y filtrado de ejercicios
+- **Registro de Pagos**: Interfaz para registrar transacciones por miembro
+- **Control de Mora**: Detección automática de pagos vencidos
+- **Configuración Financiera**: Ajuste de intereses diarios, días de gracia y multas fijas
+- **Dashboard Financiero**: Vista global de ingresos, pagos pendientes y vencidos
 
-#### Gestión de Clases
+#### 💪 Gestión de Rutinas y Ejercicios
 
-- Programación de sesiones
-- Control de capacidad
-- Asignación de entrenadores
-- Reservas de miembros
+- **Creador de Rutinas**: Interface drag & drop para armar planes de entrenamiento
+- **Catálogo de Ejercicios**: Base de datos categorizada por grupo muscular
+- **Asignación**: Vinculación directa de rutinas a miembros o planes
 
-#### Control de Acceso
+#### 📅 Gestión de Clases
 
-- Check-in por QR, DNI o manual
-- Validación de estado de membresía
-- Registro de asistencias
-- Control de morosos
+- **Calendario Semanal**: Vista visual de todas las clases programadas
+- **Programación Recurrente**: Configuración de horarios, cupos y entrenadores
+- **Reservas**: Sistema de inscripción para miembros
 
-#### Finanzas
+#### 👥 Gestión de Personal
 
-- Registro de pagos
-- Estados: Pagado, Pendiente, Vencido, Fallido
-- Métodos de pago: Efectivo, Transferencia, Tarjeta, MercadoPago
-- Dashboard financiero con métricas
+- **Roles y Permisos**: Perfiles para Entrenadores, Staff y Nutricionistas
+- **Gestión de Disponibilidad**: Horarios de trabajo y sedes asignadas
+- **Especialidades**: Registro de certificaciones y áreas de expertise
 
-#### Gestión de Personal
+#### 📋 Planes de Suscripción
 
-- Registro de entrenadores y staff
-- Especialidades y certificaciones
-- Horarios y disponibilidad
-- Biografías profesionales
-
-#### Planes de Suscripción
-
-- Planes configurables (Basic, Pro, Enterprise)
-- Límites de staff y miembros
-- Funcionalidades incluidas
-- Precios y monedas
+- **Creador de Planes**: Configuración de duración, precio y beneficios
+- **Features**: Toggles para "Acceso Multisede", "Clases Incluidas", etc.
+- **Ciclo de Vida**: Control de vigencia y renovaciones
 
 ## Stack Tecnológico
 
@@ -146,9 +134,6 @@ pnpm format
 
 # Verificar código (lint + format)
 pnpm check
-
-# Corregir automáticamente
-pnpm check:fix
 ```
 
 ## Estructura del Proyecto
@@ -158,10 +143,12 @@ src/
 ├── app/                    # Rutas de Next.js (App Router)
 │   ├── (auth)/            # Páginas de autenticación
 │   └── (main)/            # Páginas principales
-│       └── dashboard/     # Dashboards por rol y módulos
+│       ├── dashboard/     # Dashboards por rol y módulos
+│       │   ├── features/  # Feature Flags (SuperAdmin)
+│       │   ├── finance/   # Configuración financiera
+│       │   ├── plans/     # Gestión de planes
+│       │   └── ...
 ├── components/            # Componentes reutilizables
-│   ├── auth/             # Componentes de autenticación
-│   └── ui/               # Componentes UI de Shadcn
 ├── config/               # Configuración (navegación, rutas)
 ├── contracts/            # Interfaces y tipos TypeScript
 ├── data/                 # Datos mock para desarrollo
@@ -171,18 +158,13 @@ src/
 
 ## Próximas Funcionalidades
 
-- [ ] Integración con APIs reales
-- [ ] Sistema de notificaciones
-- [ ] Análisis y reportes avanzados
-- [ ] App móvil (React Native)
-- [ ] Integración con pasarelas de pago
-- [ ] Sistema de reservas online
-- [ ] Gestión de inventario
-- [ ] Portal público del gimnasio
+- [ ] Integración con MercadoPago Real
+- [ ] Sistema de Notificaciones (Email/WhatsApp)
+- [ ] App Móvil para Miembros
+- [ ] Reportes Exportables (PDF/Excel)
+- [ ] Portal Público de Inscripción
 
 ## Contribuir
-
-Las contribuciones son bienvenidas. Para cambios importantes:
 
 1. Abre un issue describiendo el cambio propuesto
 2. Crea un fork del repositorio
