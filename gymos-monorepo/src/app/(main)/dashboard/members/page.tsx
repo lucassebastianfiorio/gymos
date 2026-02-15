@@ -5,6 +5,7 @@ import { UserRole, Member } from '@/contracts';
 import { RoleGuard } from '@/components/auth/role-guard';
 import { MembersTable } from './_components/members-table';
 import { MemberForm } from './_components/member-form';
+import { MemberPaymentHistory } from './_components/member-payment-history';
 import { mockMembers } from '@/data/members';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -15,6 +16,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 
 export default function MembersPage() {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -34,6 +41,7 @@ export default function MembersPage() {
         console.log("Submit:", values);
         setIsSheetOpen(false);
         // Aquí iría la lógica real de mutación
+        // En una app real, actualizaríamos el estado 'members' o invalidaríamos la query
     };
 
     return (
@@ -42,23 +50,37 @@ export default function MembersPage() {
                  <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold tracking-tight">Gestión de Miembros</h1>
                     <Button onClick={handleCreate}>
-                        <Plus className="mr-2 h-4 w-4" /> Nuevos Miembro
+                        <Plus className="mr-2 h-4 w-4" /> Nuevo Miembro
                     </Button>
                 </div>
 
                 <MembersTable data={mockMembers} onEdit={handleEdit} />
 
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                    <SheetContent>
-                        <SheetHeader>
+                    <SheetContent className="sm:max-w-[600px] overflow-y-auto">
+                        <SheetHeader className="mb-4">
                             <SheetTitle>{editingMember ? 'Editar Miembro' : 'Registrar Nuevo Miembro'}</SheetTitle>
                             <SheetDescription>
-                                {editingMember ? 'Actualiza los datos del miembro.' : 'Completa el formulario para dar de alta un nuevo miembro.'}
+                                {editingMember ? 'Gestiona la información y pagos del miembro.' : 'Completa el formulario para dar de alta un nuevo miembro.'}
                             </SheetDescription>
                         </SheetHeader>
-                        <div className="py-4">
-                            <MemberForm defaultValues={editingMember || undefined} onSubmit={onSubmit} />
-                        </div>
+                        
+                        {editingMember ? (
+                             <Tabs defaultValue="details" className="w-full">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="details">Datos Personales</TabsTrigger>
+                                    <TabsTrigger value="payments">Historial de Pagos</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="details" className="mt-4">
+                                     <MemberForm defaultValues={editingMember} onSubmit={onSubmit} />
+                                </TabsContent>
+                                <TabsContent value="payments" className="mt-4">
+                                    <MemberPaymentHistory memberId={editingMember.id} />
+                                </TabsContent>
+                            </Tabs>
+                        ) : (
+                            <MemberForm onSubmit={onSubmit} />
+                        )}
                     </SheetContent>
                 </Sheet>
             </div>

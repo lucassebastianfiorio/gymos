@@ -1,18 +1,25 @@
-'use client';
+"use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+// Ensure these imports point to creating component if they don't exist, but they likely do
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -20,121 +27,380 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Member } from "@/contracts"
+import { mockLocations } from "@/data/locations"
+// import { mockRoutines } from "@/data/routines" 
+import { mockStaff, getTrainers } from "@/data/staff"
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
-  }),
-  email: z.string().email({
-    message: "Email inválido.",
-  }),
+  firstName: z.string().min(2, { message: "Mínimo 2 caracteres" }),
+  lastName: z.string().min(2, { message: "Mínimo 2 caracteres" }),
+  dni: z.string().min(7, { message: "DNI inválido" }),
+  email: z.string().email({ message: "Email inválido" }),
+  phone: z.string().min(8, { message: "Teléfono requerido" }),
+  
   membershipPlan: z.enum(["Basic", "Premium", "VIP"]),
-  status: z.enum(["Active", "Inactive", "Pending"]),
+  planType: z.enum(["monthly", "per_class", "quarterly", "annual"]),
+  planExpirationDate: z.date({ required_error: "Fecha de vencimiento requerida" }),
+  status: z.enum(["Active", "Inactive", "Pending", "Suspended"]),
+  
+  assignedLocationId: z.string().optional(),
+  assignedTrainerId: z.string().optional(),
+  assignedRoutineId: z.string().optional(),
+  
+  observations: z.string().optional(),
 })
 
 interface MemberFormProps {
-    defaultValues?: Member;
-    onSubmit: (values: z.infer<typeof formSchema>) => void;
+  defaultValues?: Member
+  onSubmit: (values: any) => void
 }
 
 export function MemberForm({ defaultValues, onSubmit }: MemberFormProps) {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: defaultValues?.name || "",
-            email: defaultValues?.email || "",
-            membershipPlan: defaultValues?.membershipPlan || "Basic",
-            status: defaultValues?.status || "Active",
-        },
-    })
+  // Split name if firstName/lastName not available (backward compatibility)
+  const nameParts = defaultValues?.name?.split(' ') || []
+  const defaultFirstName = defaultValues?.firstName || nameParts[0] || ""
+  const defaultLastName = defaultValues?.lastName || nameParts.slice(1).join(' ') || ""
 
-    const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        // En un caso real, aquí iría la lógica de actualización
-        console.log(values);
-        onSubmit(values);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: defaultFirstName,
+      lastName: defaultLastName,
+      dni: defaultValues?.dni || "",
+      email: defaultValues?.email || "",
+      phone: defaultValues?.phone || "",
+      
+      membershipPlan: defaultValues?.membershipPlan || "Basic",
+      planType: defaultValues?.planType || "monthly",
+      planExpirationDate: defaultValues?.planExpirationDate || new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      status: defaultValues?.status || "Active",
+      
+      assignedLocationId: defaultValues?.assignedLocationId || undefined,
+      assignedTrainerId: defaultValues?.assignedTrainerId || undefined,
+      assignedRoutineId: defaultValues?.assignedRoutineId || undefined,
+      
+      observations: defaultValues?.observations || "",
+    },
+  })
+
+  // Trainers helper
+  const trainers = getTrainers()
+
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    // Combine names for backward compatibility
+    const submissionData = {
+      ...values,
+      name: `${values.firstName} ${values.lastName}`,
     }
+    onSubmit(submissionData)
+  }
 
-    return (
-        <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        
+        {/* Personal Information */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Información Personal</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
                 <FormItem>
-                <FormLabel>Nombre Completo</FormLabel>
-                <FormControl>
-                    <Input placeholder="Juan Pérez" {...field} />
-                </FormControl>
-                <FormMessage />
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Juan" {...field} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
-            )}
+              )}
             />
             <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
                 <FormItem>
-                <FormLabel>Email</FormLabel>
+                  <FormLabel>Apellido</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Pérez" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="dni"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>DNI</FormLabel>
+                  <FormControl>
+                    <Input placeholder="12345678" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="juan@email.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Teléfono</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+54 11..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Membership Details */}
+        <div className="space-y-4 pt-4 border-t">
+          <h3 className="text-lg font-medium">Membresía</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="membershipPlan"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nivel</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione nivel" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Basic">Basic</SelectItem>
+                      <SelectItem value="Premium">Premium</SelectItem>
+                      <SelectItem value="VIP">VIP</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="planType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Plan</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="monthly">Mensual</SelectItem>
+                      <SelectItem value="quarterly">Trimestral</SelectItem>
+                      <SelectItem value="annual">Anual</SelectItem>
+                      <SelectItem value="per_class">Por Clase</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="planExpirationDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Vencimiento del Plan</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Seleccione fecha</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estado</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Active">Activo</SelectItem>
+                      <SelectItem value="Inactive">Inactivo</SelectItem>
+                      <SelectItem value="Pending">Pendiente</SelectItem>
+                      <SelectItem value="Suspended">Suspendido</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Assignments */}
+        <div className="space-y-4 pt-4 border-t">
+          <h3 className="text-lg font-medium">Asignaciones</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="assignedLocationId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sucursal Asignada</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value || "none"}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione sucursal" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Sin asignar</SelectItem>
+                      {mockLocations.map(loc => (
+                        <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="assignedTrainerId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Entrenador</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value || "none"}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Asignar entrenador" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Sin asignar</SelectItem>
+                      {trainers.map(trainer => (
+                        <SelectItem key={trainer.id} value={trainer.id}>{trainer.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+             <FormField
+              control={form.control}
+              name="assignedRoutineId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rutina</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value || "none"}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Asignar rutina" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Sin asignar</SelectItem>
+                      <SelectItem value="routine_1">Rutina Principiante</SelectItem>
+                      <SelectItem value="routine_2">Rutina Intermedia</SelectItem>
+                      <SelectItem value="routine_3">Rutina Avanzada</SelectItem>
+                      <SelectItem value="routine_4">Pérdida de Peso</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <FormField
+            control={form.control}
+            name="observations"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Observaciones / Ficha Médica</FormLabel>
                 <FormControl>
-                    <Input placeholder="juan.perez@email.com" {...field} />
+                  <Textarea 
+                    placeholder="Notas sobre salud, objetivos, lesiones..." 
+                    className="resize-none" 
+                    {...field} 
+                  />
                 </FormControl>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-            />
-            <div className="grid grid-cols-2 gap-4">
-                <FormField
-                control={form.control}
-                name="membershipPlan"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Plan de Membresía</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Seleccione un plan" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        <SelectItem value="Basic">Basic</SelectItem>
-                        <SelectItem value="Premium">Premium</SelectItem>
-                        <SelectItem value="VIP">VIP</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Estado</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Seleccione estado" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        <SelectItem value="Active">Activo</SelectItem>
-                        <SelectItem value="Inactive">Inactivo</SelectItem>
-                        <SelectItem value="Pending">Pendiente</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            </div>
-            
-            <div className="flex justify-end">
-                <Button type="submit">{defaultValues ? 'Actualizar Miembro' : 'Registrar Miembro'}</Button>
-            </div>
-        </form>
-        </Form>
-    )
+          />
+        </div>
+
+        <div className="flex justify-end pt-4">
+          <Button type="submit" size="lg">
+            {defaultValues ? 'Actualizar Miembro' : 'Registrar Miembro'}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  )
 }

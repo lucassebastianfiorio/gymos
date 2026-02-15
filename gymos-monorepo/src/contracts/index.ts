@@ -16,20 +16,153 @@ export interface User {
   avatarUrl?: string; // Added for UI
 }
 
+// ============================================
+// LOCATION / BRANCH
+// ============================================
+
+export interface Location {
+  id: string;
+  tenantId: string;
+  name: string;
+  address: string;
+  city: string;
+  phone?: string;
+  email?: string;
+  isActive: boolean;
+  createdAt: Date;
+}
+
+// ============================================
+// FEATURE FLAGS
+// ============================================
+
+export interface FeatureFlag {
+  id: string;
+  key: string; // e.g., 'members', 'routines', 'payments', 'classes'
+  name: string;
+  description: string;
+  category: 'core' | 'premium' | 'addon';
+}
+
+export interface TenantFeatureSettings {
+  tenantId: string;
+  enabledFeatures: string[]; // Array of feature keys
+}
+
+// ============================================
+// MEMBER (ENHANCED)
+// ============================================
+
+export type MemberStatus = 'Active' | 'Inactive' | 'Pending' | 'Suspended';
+export type MembershipPlan = 'Basic' | 'Premium' | 'VIP';
+export type PlanType = 'monthly' | 'per_class' | 'quarterly' | 'annual';
+
 export interface Member extends User {
-  status: 'Active' | 'Inactive' | 'Pending';
-  membershipPlan: 'Basic' | 'Premium' | 'VIP';
+  // Personal info
+  firstName: string;
+  lastName: string;
+  dni: string;
+  phone?: string;
+  
+  // Status and membership
+  status: MemberStatus;
+  membershipPlan: MembershipPlan;
+  planType: PlanType;
+  planExpirationDate: Date;
   joinDate: Date;
   lastVisit?: Date;
-  phone?: string;
+  
+  // Assignments
+  assignedTrainerId?: string;
+  assignedLocationId?: string;
+  assignedRoutineId?: string;
+  
+  // Notes
+  observations?: string; // health issues, medical notes, etc
 }
+
+// ============================================
+// STAFF (ENHANCED)
+// ============================================
 
 export interface Staff extends User {
   role: UserRole.Trainer | UserRole.Staff | UserRole.Coach | UserRole.AdminTenant;
   specialties: string[];
   schedule?: string;
   bio?: string;
+  assignedLocationIds: string[]; // branches where this staff works
+  availableAtAllLocations: boolean; // if true, works at all branches
 }
+
+// ============================================
+// PAYMENT (ENHANCED)
+// ============================================
+
+export type PaymentStatus = 'Paid' | 'Pending' | 'Overdue' | 'Partial' | 'Failed';
+export type PaymentMethod = 'Cash' | 'Transfer' | 'Card' | 'MercadoPago';
+
+export interface Payment {
+  id: string;
+  memberId: string;
+  memberName: string; // Denormalized for easy display
+  tenantId: string;
+  locationId?: string; // REQUIRED if tenant has locations
+  
+  // Amounts
+  amount: number; // Total to pay
+  basePlanAmount: number; // original plan price
+  lateFee: number; // calculated late fee
+  interest: number; // calculated interest
+  currency: string;
+  
+  // Status and dates
+  status: PaymentStatus;
+  method: PaymentMethod;
+  date: Date; // Registration date
+  dueDate: Date;
+  paidDate?: Date;
+  
+  // Additional info
+  concept: string; // e.g. "Cuota Marzo 2026"
+  daysLate: number; // auto-calculated
+  notes?: string;
+}
+
+// ============================================
+// LATE PAYMENT SETTINGS
+// ============================================
+
+export interface LatePaymentSettings {
+  tenantId: string;
+  interestPerDay: number; // percentage (e.g., 0.5 = 0.5% per day)
+  lateFee: number; // fixed amount
+  suspensionAfterDays: number; // auto-suspend member after X days
+  gracePeriodDays: number; // days before applying fees
+}
+
+// ============================================
+// CLASS SCHEDULING
+// ============================================
+
+export interface ScheduledClass {
+  id: string;
+  tenantId: string;
+  locationId?: string;
+  name: string;
+  trainerId: string;
+  trainerName?: string; // Denormalized
+  dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday
+  startTime: string; // "09:00"
+  duration: number; // minutes
+  capacity: number;
+  recurrence: 'weekly' | 'biweekly' | 'monthly';
+  isActive: boolean;
+  color?: string; // for UI calendar
+}
+
+// ============================================
+// CLASSES (EXISTING)
+// ============================================
 
 export interface ClassDefinition {
   id: string;
@@ -58,6 +191,10 @@ export interface Booking {
   status: 'Confirmed' | 'Cancelled' | 'Waitlist';
   bookedAt: Date;
 }
+
+// ============================================
+// TENANT
+// ============================================
 
 export type TenantPlan = 'Enterprise' | 'Pro' | 'Standard';
 export type TenantStatus = 'Active' | 'Inactive' | 'Suspended';
@@ -93,6 +230,7 @@ export interface Tenant {
   userCount: number;
   features: TenantFeatures;
   settings: TenantSettings;
+  hasLocations: boolean; // NEW: indicates if gym has multiple branches
 }
 
 export interface FeatureDefinition {
@@ -105,6 +243,9 @@ export interface FeatureDefinition {
   isGlobal?: boolean;
 }
 
+// ============================================
+// SUBSCRIPTION PLANS
+// ============================================
 
 export interface SubscriptionPlan {
   id: string;
@@ -118,21 +259,13 @@ export interface SubscriptionPlan {
   includesClasses: boolean;
   includesApp: boolean;
   status: 'Active' | 'Archived';
+  tenantId?: string; // if tenant-specific
+  locationId?: string; // if location-specific, null = all locations
 }
 
-export interface Payment {
-  id: string;
-  memberId: string;
-  memberName: string; // Denormalized for easy display
-  amount: number;
-  currency: string;
-  status: 'Paid' | 'Pending' | 'Overdue' | 'Failed';
-  method: 'Cash' | 'Transfer' | 'Card' | 'MercadoPago';
-  date: Date;
-  dueDate: Date;
-  concept: string; // e.g. "Cuota Marzo 2026"
-  tenantId: string;
-}
+// ============================================
+// EXERCISES & ROUTINES
+// ============================================
 
 export interface Exercise {
   id: string;
@@ -168,10 +301,15 @@ export interface AssignedRoutine {
   active: boolean;
 }
 
+// ============================================
+// CHECK-IN
+// ============================================
+
 export interface CheckIn {
   id: string;
   memberId: string;
   memberName: string; // Denormalized
+  locationId?: string;
   timestamp: Date;
   type: 'QR' | 'DNI' | 'Manual';
   status: 'Allowed' | 'Denied';

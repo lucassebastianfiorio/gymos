@@ -9,7 +9,9 @@ import {
   Lock,
   type LucideIcon,
   Dumbbell,
-  CalendarDays
+  CalendarDays,
+  MapPin,
+  Percent
 } from "lucide-react";
 import { UserRole } from "@/contracts";
 
@@ -60,7 +62,7 @@ export const navigationConfig: NavGroup[] = [
         title: "Planes de Suscripción",
         url: "/dashboard/plans",
         icon: Banknote,
-        allowedRoles: [UserRole.AdminGlobal],
+        allowedRoles: [UserRole.AdminGlobal, UserRole.AdminTenant],
       },
     ],
   },
@@ -69,10 +71,16 @@ export const navigationConfig: NavGroup[] = [
     label: "Gestión",
     items: [
        {
-        title: "Finanzas",
-        url: "/dashboard/finance",
-        icon: Banknote,
+        title: "Sucursales",
+        url: "/dashboard/locations",
+        icon: MapPin,
         allowedRoles: [UserRole.AdminTenant],
+      },
+       {
+        title: "Pagos & Finanzas",
+        url: "/dashboard/payments",
+        icon: Banknote,
+        allowedRoles: [UserRole.AdminTenant, UserRole.Staff],
       },
        {
         title: "Miembros",
@@ -82,9 +90,9 @@ export const navigationConfig: NavGroup[] = [
       },
       {
         title: "Clases",
-        url: "/dashboard/classes",
+        url: "/dashboard/schedule",
         icon: CalendarDays,
-        allowedRoles: [UserRole.AdminTenant, UserRole.Trainer],
+        allowedRoles: [UserRole.AdminTenant, UserRole.Trainer, UserRole.Staff],
       },
       {
          title: "Gestión de Rutinas",
@@ -99,15 +107,9 @@ export const navigationConfig: NavGroup[] = [
         allowedRoles: [UserRole.AdminTenant, UserRole.Trainer],
       },
       {
-         title: "Control de Acceso",
-         url: "/dashboard/access",
-         icon: Lock,
-         allowedRoles: [UserRole.AdminTenant, UserRole.Staff],
-      },
-      {
          title: "Personal (Staff)",
          url: "/dashboard/staff",
-         icon: Users, // Changed icon to Users for staff to avoid duplicate Dumbbell
+         icon: Users,
          allowedRoles: [UserRole.AdminTenant],
       }
     ]
@@ -129,6 +131,12 @@ export const navigationConfig: NavGroup[] = [
               allowedRoles: [UserRole.Member],
           },
           {
+              title: "Clases Reservadas",
+              url: "/dashboard/schedule",
+              icon: CalendarDays,
+              allowedRoles: [UserRole.Member],
+          },
+          {
               title: "Mi Progreso",
               url: "/dashboard/progress",
               icon: ChartBar,
@@ -140,6 +148,12 @@ export const navigationConfig: NavGroup[] = [
       id: 4,
       label: "Configuración",
       items: [
+          {
+              title: "Configuración de Mora",
+              url: "/dashboard/settings/finance",
+              icon: Percent,
+              allowedRoles: [UserRole.AdminTenant],
+          },
           {
               title: "Ajustes del Sistema",
               url: "/dashboard/settings",
