@@ -24,16 +24,21 @@
 #### 📍 Gestión de Sucursales
 
 - **Multi-sede**: Creación y gestión de múltiples ubicaciones físicas
-- **Contexto de Trabajo**: Selector de sucursal para staff que trabajan en múltiples sedes
+- **Contexto de Trabajo**: Selector de sucursal persistente en el dashboard principal
 - **Asignación de Staff**: Vinculación de personal a sedes específicas
-- **Reportes por Sede**: Filtrado de métricas, pagos y miembros por ubicación
+- **Dashboard Dinámico**: Filtrado automático de métricas (Miembros, Clases, Ingresos) y listas de actividad según la sede seleccionada
 
 #### 👥 Gestión de Miembros
 
-- **Perfil Completo**: Datos personales, DNI, datos de contacto y observaciones
-- **Asignaciones**: Vinculación con Entrenador, Sucursal y Plan
-- **Servicios Específicos**: Asignación de servicios independientes (Nutricionista, Sauna, etc.) durante el registro
-- **Historial**: Registro de visitas, pagos y cambios de estado
+- **Perfil Completo**: Datos personales, DNI, datos de contacto y sucursales habilitadas
+- **Dashboard Interactivo**:
+  - **Asistencia**: Seguimiento de racha y conteo mensual de visitas
+  - **Timer Programable**: Cronómetro y Cuenta atrás con alarmas sonoras configurables
+  - **Entrenamiento**: Visualización de rutinas cargadas por el entrenador (lectura protegida)
+  - **Progreso**: Gráficos de frecuencia semanal y asistencia a clases
+  - **Clases**: Calendario de clases disponibles con cupos en tiempo real
+  - **Notificaciones**: Avisos de vencimientos y mensajes directos del gimnasio
+  - **Documentación**: Acceso centralizado a reglamentos y aptos físicos
 - **Estados**: Activo, Inactivo, Pendiente, Suspendido
 
 #### 💰 Finanzas y Pagos

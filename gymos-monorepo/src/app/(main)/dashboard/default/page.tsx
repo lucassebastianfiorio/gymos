@@ -4,82 +4,107 @@ import { RoleGuard } from '@/components/auth/role-guard';
 import { UserRole } from '@/contracts';
 import { mockTenants } from '@/data/tenants';
 import { mockMembers } from '@/data/members';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Building, Plus, Settings, Users, } from 'lucide-react';
+import { ArrowRight, Building, CreditCard, MapPin, Plus, Settings, Users, } from 'lucide-react';
 import { useAuthStore } from '@/lib/auth/store';
-import { memberDashboardData } from '@/data/member-dashboard';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { getLocationsByTenant } from '@/data/locations';
+import { MemberProfile } from '../_components/member/member-profile';
+import { MemberAttendance } from '../_components/member/member-attendance';
+import { MemberTimer } from '../_components/member/member-timer';
+import { MemberRoutineView } from '../_components/member/member-routine-view';
+import { MemberProgress } from '../_components/member/member-progress';
+import { MemberClasses } from '../_components/member/member-classes';
+import { MemberDocs } from '../_components/member/member-docs';
+import { MemberMessages } from '../_components/member/member-messages';
+import { MemberNotes } from '../_components/member/member-notes';
 
 export default function DashboardDefaultPage() {
-  const { user } = useAuthStore();
+  const { user, selectedLocationId, setSelectedLocationId } = useAuthStore();
+  
   const totalTenants = mockTenants.length;
   const activeTenants = mockTenants.filter((t) => t.status === 'Active').length;
   const totalUsers = mockTenants.reduce((acc, curr) => acc + curr.userCount, 0);
-  const activeMembers = mockMembers.filter((m) => m.status === 'Active').length;
-  const totalMembers = mockMembers.length;
+
+  // Filter members by location if selected
+  const locationMembers = selectedLocationId 
+    ? mockMembers.filter(m => m.assignedLocationId === selectedLocationId)
+    : mockMembers;
+
+  const activeMembers = locationMembers.filter((m) => m.status === 'Active').length;
+  const totalMembers = locationMembers.length;
+
+  const tenantLocations = user?.tenantId ? getLocationsByTenant(user.tenantId) : [];
 
   /* MEMBER DASHBOARD VIEW */
   if (user?.role === UserRole.Member) {
+      const currentMember = mockMembers.find(m => m.email === user.email) || mockMembers[0];
+      
+      const mockRoutine = {
+        name: "Fuerza e Hipertrofia",
+        description: "Enfoque en pecho y tríceps (Día 1)",
+        items: [
+          { name: "Press de Banca", sets: 4, reps: "8-10", notes: "Controlar el descenso" },
+          { name: "Aperturas con Mancuernas", sets: 3, reps: "12", notes: "Máximo estiramiento" },
+          { name: "Press Francés", sets: 4, reps: "10", notes: "Codos cerrados" },
+          { name: "Extensiones en Polea", sets: 3, reps: "15", notes: "Sostener 1s abajo" },
+        ]
+      };
+
+      const attendanceStats = {
+        monthlyCount: 12,
+        streak: 5,
+        lastVisit: "Ayer"
+      };
+
       return (
           <div className="flex flex-col gap-6">
-              <h1 className="text-2xl font-bold tracking-tight">Hola, {user.name} 👋</h1>
-              
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {/* NEXT CLASS CARD */}
-                  <Card>
-                      <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium text-muted-foreground">Próxima Clase</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                          <div className="text-2xl font-bold">{memberDashboardData.nextClass.name}</div>
-                          <p className="text-xs text-muted-foreground">
-                              {memberDashboardData.nextClass.date} - {memberDashboardData.nextClass.time}
-                          </p>
-                          <div className="mt-2 text-sm text-blue-600">
-                             Con {memberDashboardData.nextClass.instructor}
-                          </div>
-                      </CardContent>
-                  </Card>
-
-                   {/* MEMBERSHIP STATUS */}
-                   <Card>
-                      <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium text-muted-foreground">Mi Membresía</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                          <div className="text-2xl font-bold">{memberDashboardData.membership.plan}</div>
-                          <div className="flex items-center gap-2 mt-1">
-                               <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                                  {memberDashboardData.membership.status}
-                               </span>
-                               <span className="text-xs text-muted-foreground">
-                                  Vence en {memberDashboardData.membership.daysLeft} días
-                               </span>
-                          </div>
-                      </CardContent>
-                  </Card>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <h1 className="text-2xl font-bold tracking-tight">¡Hola, {user.name}! 💪</h1>
+                <div className="flex items-center gap-2">
+                   <Badge variant="outline" className="bg-blue-50 text-blue-700">Miembro Premium</Badge>
+                   <Badge variant="outline" className="bg-green-50 text-green-700">Cuota al día</Badge>
+                </div>
               </div>
+              
+              <div className="grid gap-6 md:grid-cols-12">
+                  {/* LEFT COLUMN - PROFILE & ATTENDANCE */}
+                  <div className="md:col-span-4 space-y-6">
+                      <MemberProfile member={currentMember} />
+                      <MemberAttendance stats={attendanceStats} />
+                      <MemberProgress />
+                      <MemberDocs />
+                  </div>
 
-               {/* RECENT ACTIVITY */}
-               <Card className="md:col-span-2 lg:col-span-1">
-                  <CardHeader>
-                      <CardTitle>Actividad Reciente</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                      <div className="space-y-4">
-                          {memberDashboardData.recentActivity.map((act, i) => (
-                              <div key={i} className="flex justify-between items-center border-b pb-2 last:border-0 last:pb-0">
-                                  <div>
-                                      <p className="font-medium text-sm">{act.activity}</p>
-                                      <p className="text-xs text-muted-foreground">{act.date}</p>
-                                  </div>
-                                  <div className="text-xs font-mono">{act.time}</div>
-                              </div>
-                          ))}
-                      </div>
-                  </CardContent>
-              </Card>
+                  {/* MIDDLE COLUMN - ROUTINE & INTERACTIVE */}
+                  <div className="md:col-span-5 space-y-6">
+                      <MemberTimer />
+                      <MemberRoutineView routine={mockRoutine} />
+                      <MemberNotes />
+                  </div>
+
+                  {/* RIGHT COLUMN - CLASSES & INFO */}
+                  <div className="md:col-span-3 space-y-6">
+                      <MemberClasses />
+                      <MemberMessages />
+                      
+                      {/* QUICK HELP */}
+                      <Card className="bg-blue-600 text-white border-none">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-white text-sm">¿Necesitás ayuda?</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-xs text-blue-100 mb-4">Contactate con recepción o con tu entrenador asignado.</p>
+                          <Button variant="secondary" size="sm" className="w-full text-blue-600 font-bold">
+                            Chatear con el Gym
+                          </Button>
+                        </CardContent>
+                      </Card>
+                  </div>
+              </div>
           </div>
       );
   }
@@ -192,8 +217,31 @@ export default function DashboardDefaultPage() {
   return (
     <RoleGuard allowedRoles={[UserRole.AdminTenant, UserRole.Trainer, UserRole.Staff]}>
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold tracking-tight">Resumen del Panel</h1>
+        <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Resumen del Panel</h1>
+              <p className="text-sm text-muted-foreground">Bienvenido de nuevo, {user?.name}</p>
+            </div>
+            
+            {tenantLocations.length > 0 && (
+              <div className="flex items-center gap-2 mt-2 md:mt-0">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <Select 
+                  value={selectedLocationId || 'all'} 
+                  onValueChange={(v) => setSelectedLocationId(v === 'all' ? null : v)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Todas las sucursales" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las sucursales</SelectItem>
+                    {tenantLocations.map(loc => (
+                      <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
         </div>
 
         {/* METRICS ROW */}
@@ -244,7 +292,7 @@ export default function DashboardDefaultPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {mockMembers.slice(0, 5).map(member => (
+                        {locationMembers.slice(0, 5).map(member => (
                             <div key={member.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
                                 <div>
                                     <p className="font-medium">{member.name}</p>
@@ -282,8 +330,8 @@ export default function DashboardDefaultPage() {
                     </Button>
                     {user?.role !== UserRole.Trainer && (
                       <Button variant="outline" className="w-full justify-start" asChild>
-                          <Link href="/dashboard/finance">
-                              <Settings className="mr-2 h-4 w-4" /> Ver Finanzas
+                          <Link href="/dashboard/payments">
+                              <CreditCard className="mr-2 h-4 w-4" /> Pagos
                           </Link>
                       </Button>
                     )}
