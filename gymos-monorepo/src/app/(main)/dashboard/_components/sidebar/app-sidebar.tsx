@@ -108,7 +108,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={filteredNav} />
       </SidebarContent>
       <SidebarFooter>
-        <RoleSwitcher />
         {user && (
           <NavUser 
             user={{

@@ -55,8 +55,15 @@ export const systemFeatures: FeatureFlag[] = [
         id: 'feat_portal',
         key: 'portal',
         name: 'Portal de Miembros',
-        description: 'Acceso web/app para miembros ver rutinas y clases',
+        description: 'Acceso web/app para que los miembros gestionen sus rutinas y pagos',
         category: 'premium'
+    },
+    {
+        id: 'feat_ai',
+        key: 'ai_insights',
+        name: 'IA - Predicciones & Insights',
+        description: 'Análisis avanzado con IA para predecir abandono y optimizar ingresos',
+        category: 'addon'
     },
 ];
 

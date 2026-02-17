@@ -386,3 +386,26 @@ export interface CashMovement {
   notes?: string;
 }
 
+// ============================================
+// MESSAGING & NOTIFICATIONS
+// ============================================
+
+export type MessageType = 'Direct' | 'Global' | 'Tenant' | 'Staff';
+
+export interface Message {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: UserRole;
+  
+  targetType: 'User' | 'Tenant' | 'Role' | 'All';
+  targetId?: string; // id of user, tenant, or role
+  
+  title: string;
+  content: string;
+  date: Date;
+  isRead: boolean;
+  priority: 'Low' | 'Medium' | 'High';
+  
+  tenantId?: string; // context for the message
+}

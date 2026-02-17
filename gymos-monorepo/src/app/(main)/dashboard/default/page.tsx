@@ -8,8 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Building, CreditCard, MapPin, Plus, Settings, Users, } from 'lucide-react';
+import { ArrowRight, Building, CreditCard, MapPin, Plus, Settings, Users, BrainCircuit } from 'lucide-react';
 import { useAuthStore } from '@/lib/auth/store';
+import { isFeatureEnabled } from '@/data/feature-flags';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getLocationsByTenant } from '@/data/locations';
 import { MemberProfile } from '../_components/member/member-profile';
@@ -19,8 +20,9 @@ import { MemberRoutineView } from '../_components/member/member-routine-view';
 import { MemberProgress } from '../_components/member/member-progress';
 import { MemberClasses } from '../_components/member/member-classes';
 import { MemberDocs } from '../_components/member/member-docs';
-import { MemberMessages } from '../_components/member/member-messages';
 import { MemberNotes } from '../_components/member/member-notes';
+import { MessageList } from '../_components/messaging/message-list';
+import { SendMessageForm } from '../_components/messaging/send-message-form';
 
 export default function DashboardDefaultPage() {
   const { user, selectedLocationId, setSelectedLocationId } = useAuthStore();
@@ -89,7 +91,7 @@ export default function DashboardDefaultPage() {
                   {/* RIGHT COLUMN - CLASSES & INFO */}
                   <div className="md:col-span-3 space-y-6">
                       <MemberClasses />
-                      <MemberMessages />
+                      <MessageList />
                       
                       {/* QUICK HELP */}
                       <Card className="bg-blue-600 text-white border-none">
@@ -119,7 +121,7 @@ export default function DashboardDefaultPage() {
           </div>
 
           {/* METRICS ROW */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">Total de Gimnasios</CardTitle>
@@ -156,11 +158,28 @@ export default function DashboardDefaultPage() {
                       </p>
                   </CardContent>
               </Card>
+
+              {isFeatureEnabled(user.tenantId || '', 'ai_insights') && (
+                <Card className="border-primary/20 bg-primary/5">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                             AI Insights
+                        </CardTitle>
+                        <BrainCircuit className="h-4 w-4 text-primary" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">+12%</div>
+                        <p className="text-xs text-muted-foreground">
+                            Crecimiento proyectado (IA)
+                        </p>
+                    </CardContent>
+                </Card>
+              )}
           </div>
 
           {/* QUICK ACTIONS & RECENT */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+              <Card className="col-span-4 lg:col-span-4">
                   <CardHeader>
                       <CardTitle>Gimnasios Recientes</CardTitle>
                   </CardHeader>
@@ -190,23 +209,28 @@ export default function DashboardDefaultPage() {
                   </CardContent>
               </Card>
               
-              <Card className="col-span-3">
-                  <CardHeader>
-                      <CardTitle>Acciones Rápidas</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-2">
-                      <Button className="w-full justify-start" asChild>
-                          <Link href="/dashboard/tenants">
-                              <Plus className="mr-2 h-4 w-4" /> Agregar Nuevo Gimnasio
-                          </Link>
-                      </Button>
-                      <Button variant="outline" className="w-full justify-start" asChild>
-                           <Link href="/dashboard/features">
-                              <Settings className="mr-2 h-4 w-4" /> Gestionar Features Globales
-                          </Link>
-                      </Button>
-                  </CardContent>
-              </Card>
+              <div className="col-span-3 space-y-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Acciones Rápidas</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-2">
+                        <Button className="w-full justify-start" asChild>
+                            <Link href="/dashboard/tenants">
+                                <Plus className="mr-2 h-4 w-4" /> Agregar Nuevo Gimnasio
+                            </Link>
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start" asChild>
+                             <Link href="/dashboard/features">
+                                <Settings className="mr-2 h-4 w-4" /> Gestionar Features Globales
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                <SendMessageForm />
+                <MessageList limit={3}/>
+              </div>
           </div>
         </div>
       </RoleGuard>
@@ -318,30 +342,35 @@ export default function DashboardDefaultPage() {
                 </CardContent>
             </Card>
             
-            <Card className="col-span-3">
-                <CardHeader>
-                    <CardTitle>Acciones Rápidas</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-2">
-                    <Button className="w-full justify-start" asChild>
-                        <Link href="/dashboard/members">
-                            <Users className="mr-2 h-4 w-4" /> Ver Todos los Miembros
-                        </Link>
-                    </Button>
-                    {user?.role !== UserRole.Trainer && (
-                      <Button variant="outline" className="w-full justify-start" asChild>
-                          <Link href="/dashboard/payments">
-                              <CreditCard className="mr-2 h-4 w-4" /> Pagos
-                          </Link>
-                      </Button>
-                    )}
-                    <Button variant="outline" className="w-full justify-start" asChild>
-                        <Link href="/dashboard/classes">
-                            <Settings className="mr-2 h-4 w-4" /> Gestionar Clases
-                        </Link>
-                    </Button>
-                </CardContent>
-            </Card>
+            <div className="col-span-3 space-y-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Acciones Rápidas</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-2">
+                        <Button className="w-full justify-start" asChild>
+                            <Link href="/dashboard/members">
+                                <Users className="mr-2 h-4 w-4" /> Ver Todos los Miembros
+                            </Link>
+                        </Button>
+                        {user?.role !== UserRole.Trainer && (
+                          <Button variant="outline" className="w-full justify-start" asChild>
+                              <Link href="/dashboard/payments">
+                                  <CreditCard className="mr-2 h-4 w-4" /> Pagos
+                              </Link>
+                          </Button>
+                        )}
+                        <Button variant="outline" className="w-full justify-start" asChild>
+                            <Link href="/dashboard/classes">
+                                <Settings className="mr-2 h-4 w-4" /> Gestionar Clases
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                <SendMessageForm />
+                <MessageList limit={3} />
+            </div>
         </div>
       </div>
     </RoleGuard>

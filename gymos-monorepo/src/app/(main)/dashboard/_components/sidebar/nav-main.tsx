@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,7 +11,10 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -25,6 +29,8 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { UserRole } from "@/contracts";
+import { useAuthStore } from "@/lib/auth/store";
 import type { NavGroup, NavMainItem } from "@/navigation/sidebar/sidebar-items";
 
 interface NavMainProps {
@@ -32,7 +38,7 @@ interface NavMainProps {
 }
 
 const IsComingSoon = () => (
-  <span className="ml-auto rounded-md bg-gray-200 px-2 py-1 text-xs dark:text-gray-800">Soon</span>
+  <span className="ml-auto rounded-md bg-gray-200 px-2 py-1 text-[10px] dark:text-gray-800">Próximamente</span>
 );
 
 const NavItemExpanded = ({
@@ -140,10 +146,10 @@ const NavItemCollapsed = ({
     </SidebarMenuItem>
   );
 };
-
 export function NavMain({ items }: NavMainProps) {
   const path = usePathname();
   const { state, isMobile } = useSidebar();
+  const { user } = useAuthStore();
 
   const isItemActive = (url: string, subItems?: NavMainItem["subItems"]) => {
     if (subItems?.length) {
@@ -156,26 +162,73 @@ export function NavMain({ items }: NavMainProps) {
     return subItems?.some((sub) => path.startsWith(sub.url)) ?? false;
   };
 
+  const quickActions = useMemo(() => {
+    if (!user) return [];
+    
+    const actions = [];
+    
+    if (user.role === UserRole.AdminGlobal) {
+        actions.push({ label: 'Nuevo Gimnasio', url: '/dashboard/tenants', icon: PlusCircleIcon });
+        actions.push({ label: 'Ajustes Globales', url: '/dashboard/settings', icon: PlusCircleIcon });
+    } else if (user.role === UserRole.AdminTenant || user.role === UserRole.Staff) {
+        actions.push({ label: 'Nuevo Miembro', url: '/dashboard/members', icon: PlusCircleIcon });
+        actions.push({ label: 'Registrar Pago', url: '/dashboard/payments', icon: PlusCircleIcon });
+    }
+    
+    if (user.role === UserRole.Trainer) {
+        actions.push({ label: 'Nueva Rutina', url: '/dashboard/routines/manage', icon: PlusCircleIcon });
+        actions.push({ label: 'Registrar Peso', url: '/dashboard/progress', icon: PlusCircleIcon });
+    }
+
+    return actions;
+  }, [user]);
+
   return (
     <>
       <SidebarGroup>
         <SidebarGroupContent className="flex flex-col gap-2">
           <SidebarMenu>
             <SidebarMenuItem className="flex items-center gap-2">
-              <SidebarMenuButton
-                tooltip="Quick Create"
-                className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
-              >
-                <PlusCircleIcon />
-                <span>Quick Create</span>
-              </SidebarMenuButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip="Creación Rápida"
+                    className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+                  >
+                    <PlusCircleIcon />
+                    <span>Creación Rápida</span>
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" side="right" align="start">
+                  <DropdownMenuLabel>Acciones Rápidas</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    {quickActions.length > 0 ? (
+                        quickActions.map(action => (
+                            <DropdownMenuItem key={action.label} asChild>
+                                <Link href={action.url}>
+                                    <action.icon className="mr-2 h-4 w-4" />
+                                    <span>{action.label}</span>
+                                </Link>
+                            </DropdownMenuItem>
+                        ))
+                    ) : (
+                        <DropdownMenuItem disabled>Sin acciones disponibles</DropdownMenuItem>
+                    )}
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button
                 size="icon"
                 className="h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0"
                 variant="outline"
+                asChild
               >
-                <MailIcon />
-                <span className="sr-only">Inbox</span>
+                <Link href="/dashboard/default">
+                    <MailIcon />
+                    <span className="sr-only">Mensajes</span>
+                </Link>
               </Button>
             </SidebarMenuItem>
           </SidebarMenu>
