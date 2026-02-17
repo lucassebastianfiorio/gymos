@@ -10,6 +10,7 @@
 - Aislamiento de datos por gimnasio (tenant)
 - **Feature Flags**: Activación/desactivación de módulos (ej. Pagos, Clases) por gimnasio
 - Panel de administración global para supervisión de todos los gimnasios
+- **AI-Powered Insights**: Análisis predictivo de crecimiento y retención (Beta)
 
 ### 👥 Control de Acceso Basado en Roles
 
@@ -27,6 +28,7 @@
 - **Contexto de Trabajo**: Selector de sucursal persistente en el dashboard principal
 - **Asignación de Staff**: Vinculación de personal a sedes específicas
 - **Dashboard Dinámico**: Filtrado automático de métricas (Miembros, Clases, Ingresos) y listas de actividad según la sede seleccionada
+- **Búsqueda Global**: Acceso rápido a cualquier módulo o sección mediante `⌘J`
 
 #### 👥 Gestión de Miembros
 
@@ -59,6 +61,13 @@
 - **Retiros de Administración**: Flujo específico para retiro de fondos por parte de gerencia
 - **Balance en Tiempo Real**: Cálculo automático de saldo esperado vs contado
 - **Responsables**: Trazabilidad completa de quién realizó cada movimiento
+
+#### 📧 Mensajería y Notificaciones (NUEVO)
+
+- **Mensajería Multi-Rol**: Sistema de comunicación interna con segmentación por rol (Admin, Staff, Miembro)
+- **Targeting Granular**: Posibilidad de enviar mensajes a todos los usuarios, a un gimnasio específico, a un rol determinado o a una persona puntual
+- **Inbox Centralizado**: Bandeja de entrada integrada en los dashboards con prioridades (Baja, Media, Alta)
+- **Acciones Rápidas**: Menú de creación rápida dinámico en el sidebar según el perfil logueado
 
 #### 💪 Gestión de Rutinas y Ejercicios
 
